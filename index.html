@@ -53,6 +53,8 @@
   .resa-timer.urgent{color:#f87171}
   .btn-reserver{width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#c7d2fe;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
   .btn-reserver:active{background:#312e81}
+  .btn-sans-appli{width:100%;margin-top:6px;padding:7px;border-radius:10px;border:1px solid #475569;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-sans-appli:active{background:#334155}
   @keyframes zap{0%,100%{opacity:0.15;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1.1);filter:drop-shadow(0 0 5px #fb923c)}}
   .lightning-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0 4px;height:28px}
   .lightning{font-size:22px;animation:zap 0.9s ease-in-out infinite;display:inline-block}
@@ -187,6 +189,9 @@ function render(){
     if(b.status!=="hors-service"&&!reservee){
       html+=`<button class="btn-reserver" data-id="${id}">🔵 Réserver</button>`;
     }
+    if(b.status==="libre"){
+      html+=`<button class="btn-sans-appli" data-id="${id}">Occupée (sans appli)</button>`;
+    }
     html+=`<div class="borne-actions">
       <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>
       <span class="tap-hint">${b.status==="libre"?"Tap pour brancher":alarme?"Tap pour libérer":reservee?"Tap — je branche !":b.status==="occupe"?"Tap pour libérer":""}</span>
@@ -201,6 +206,8 @@ function render(){
     div.querySelector(".hs-btn").addEventListener("click",e=>{e.stopPropagation();toggleHS(id);});
     const btnR=div.querySelector(".btn-reserver");
     if(btnR)btnR.addEventListener("click",e=>{e.stopPropagation();openResa(id);});
+    const btnSA=div.querySelector(".btn-sans-appli");
+    if(btnSA)btnSA.addEventListener("click",e=>{e.stopPropagation();marquerSansAppli(id);});
     grid.appendChild(div);
   });
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
@@ -262,6 +269,11 @@ document.getElementById("btn-confirm-resa").addEventListener("click",async()=>{
   btn.disabled=false;btn.textContent="Réserver 10 min";
 });
 document.getElementById("btn-cancel-resa").addEventListener("click",()=>{selectedResa=null;document.getElementById("panel-resa").classList.remove("visible");render();});
+
+function marquerSansAppli(id){
+  const fin=new Date(Date.now()+4*3600*1000).toISOString();
+  saveState({...state,[id]:{status:"occupe",fin,resa:null,resaFin:null}});
+}
 
 async function saveState(next){
   state=next;render();

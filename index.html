@@ -15,17 +15,14 @@
     display: flex; flex-direction: column; align-items: center;
     padding: 32px 16px 56px;
   }
-
-  /* ── Header ── */
   .header { text-align: center; margin-bottom: 28px; }
   .label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #3d4555; margin-bottom: 8px; }
   h1 { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
   .stats { margin-top: 12px; display: flex; gap: 20px; justify-content: center; font-size: 13px; }
   .stat-libre { color: #22c55e; font-weight: 700; }
   .stat-occupe { color: #f97316; font-weight: 700; }
+  .stat-alarm { color: #ef4444; font-weight: 700; }
   .conn { margin-top: 8px; font-size: 11px; }
-
-  /* ── Grid ── */
   .grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; width: 100%; max-width: 400px; }
 
   /* ── Borne card ── */
@@ -37,177 +34,128 @@
   }
   .borne:active { transform: scale(0.97); }
   .borne.selected { outline: 2px solid #60a5fa; outline-offset: 2px; }
-
-  /* Libre */
   .borne.libre {
-    background: linear-gradient(135deg, #0d1f14 0%, #0a1a10 100%);
+    background: linear-gradient(135deg, #0d1f14, #0a1a10);
     border: 1px solid #166534;
     box-shadow: 0 0 20px #16653420, inset 0 1px 0 #22c55e18;
   }
-  /* Occupée */
   .borne.occupe {
-    background: linear-gradient(135deg, #1c1108 0%, #150d04 100%);
+    background: linear-gradient(135deg, #1c1108, #150d04);
     border: 1px solid #9a3412;
     box-shadow: 0 0 20px #f9731625, inset 0 1px 0 #f9731618;
   }
-  /* Hors service */
   .borne.hors-service {
-    background: #0c0e14;
-    border: 1px solid #1e2233;
-    cursor: default;
-    opacity: 0.6;
+    background: #0c0e14; border: 1px solid #1e2233;
+    cursor: default; opacity: 0.6;
   }
 
-  /* Flash animation on state change */
+  /* ── ALARME ── */
+  @keyframes alarm-bg {
+    0%,100% { background: linear-gradient(135deg, #1a0505, #0f0202); border-color: #ef4444; box-shadow: 0 0 30px #ef444450, inset 0 1px 0 #ef444430; }
+    50% { background: linear-gradient(135deg, #2d0808, #1a0404); border-color: #ff6b6b; box-shadow: 0 0 50px #ef444480, inset 0 1px 0 #ef444460; }
+  }
+  .borne.alarme {
+    animation: alarm-bg 1s ease-in-out infinite;
+    cursor: pointer;
+  }
+  .alarm-banner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; margin: 8px 0 4px;
+    padding: 7px 10px; border-radius: 10px;
+    background: #ef444425; border: 1px solid #ef444450;
+  }
+  @keyframes alarm-icon {
+    0%,100% { transform: rotate(-8deg) scale(1); }
+    25% { transform: rotate(8deg) scale(1.15); }
+    50% { transform: rotate(-8deg) scale(1); }
+    75% { transform: rotate(8deg) scale(1.1); }
+  }
+  .alarm-icon { font-size: 16px; animation: alarm-icon 0.6s ease-in-out infinite; display: inline-block; }
+  @keyframes alarm-text {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .alarm-text {
+    font-size: 11px; font-weight: 800; color: #ef4444;
+    text-transform: uppercase; letter-spacing: 1px;
+    animation: alarm-text 1s ease-in-out infinite;
+  }
+
   @keyframes flash { 0%{opacity:1} 50%{opacity:0.3} 100%{opacity:1} }
   .borne.flash { animation: flash 0.4s ease; }
 
-  /* ── Dot indicator ── */
   .dot-wrap { position: relative; width: 12px; height: 12px; flex-shrink: 0; margin-top: 3px; }
-  .dot {
-    width: 12px; height: 12px; border-radius: 50%;
-    position: absolute; top: 0; left: 0;
-  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 0; left: 0; }
   .libre .dot { background: #22c55e; }
   .occupe .dot { background: #f97316; }
+  .alarme .dot { background: #ef4444; }
   .hors-service .dot { background: #4b5563; }
-
-  /* Pulse rings */
-  @keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(2.4); opacity: 0; }
-  }
-  .dot-ring {
-    width: 12px; height: 12px; border-radius: 50%;
-    position: absolute; top: 0; left: 0;
-  }
+  @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2.4);opacity:0} }
+  .dot-ring { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 0; left: 0; }
   .libre .dot-ring { background: #22c55e; animation: pulse-ring 2s ease-out infinite; }
   .occupe .dot-ring { background: #f97316; animation: pulse-ring 1.2s ease-out infinite; }
+  .alarme .dot-ring { background: #ef4444; animation: pulse-ring 0.6s ease-out infinite; }
 
-  /* ── Card top ── */
   .borne-top { display: flex; justify-content: space-between; align-items: flex-start; }
   .borne-id { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
   .borne-status { font-size: 12px; margin-top: 5px; font-weight: 600; letter-spacing: 0.3px; }
   .libre .borne-status { color: #4ade80; }
   .occupe .borne-status { color: #fb923c; }
+  .alarme .borne-status { color: #ef4444; }
   .hors-service .borne-status { color: #6b7280; }
 
-  /* ── Lightning animation (occupée) ── */
-  .lightning-wrap {
-    display: flex; justify-content: center; align-items: center;
-    margin: 10px 0 4px;
-    height: 32px;
-  }
   @keyframes zap {
     0%,100% { opacity: 0.2; transform: scaleY(0.8); filter: brightness(1); }
     50% { opacity: 1; transform: scaleY(1.1); filter: brightness(1.8) drop-shadow(0 0 6px #f97316); }
   }
-  .lightning {
-    font-size: 24px;
-    animation: zap 0.9s ease-in-out infinite;
-    display: inline-block;
-  }
+  .lightning-wrap { display: flex; justify-content: center; align-items: center; margin: 10px 0 4px; height: 32px; }
+  .lightning { font-size: 24px; animation: zap 0.9s ease-in-out infinite; display: inline-block; }
   .lightning:nth-child(2) { animation-delay: 0.3s; font-size: 18px; }
   .lightning:nth-child(3) { animation-delay: 0.6s; font-size: 14px; }
 
-  /* ── Progress bar ── */
-  .progress-wrap {
-    margin-top: 8px;
-    background: #ffffff12;
-    border-radius: 6px;
-    height: 5px;
-    overflow: hidden;
-  }
-  .progress-bar {
-    height: 100%;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #f97316, #fbbf24);
-    transition: width 1s linear;
-    box-shadow: 0 0 8px #f9731680;
-  }
+  .progress-wrap { margin-top: 8px; background: #ffffff12; border-radius: 6px; height: 5px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 6px; background: linear-gradient(90deg,#f97316,#fbbf24); transition: width 1s linear; box-shadow: 0 0 8px #f9731680; }
 
-  /* ── Fin estimée ── */
   .fin-box { margin-top: 8px; }
   .fin-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
   .fin-heure { font-size: 17px; font-weight: 700; color: #fb923c; margin-top: 2px; line-height: 1; }
   .fin-min { font-size: 11px; color: #92400e; margin-left: 5px; font-weight: 500; }
 
-  /* ── Actions ── */
   .borne-actions { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
   .hs-btn { font-size: 9px; cursor: pointer; text-decoration: underline; color: #1e293b; background: none; border: none; font-family: inherit; padding: 0; }
   .borne.hors-service .hs-btn { color: #22c55e55; }
   .tap-hint { font-size: 9px; font-weight: 500; }
   .libre .tap-hint { color: #22c55e30; }
   .occupe .tap-hint { color: #f9731650; }
+  .alarme .tap-hint { color: #ef444470; font-weight: 700; }
 
-  /* ── Libre sparkle ── */
-  @keyframes sparkle {
-    0%,100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1) rotate(180deg); }
-  }
-  .sparkle {
-    position: absolute; font-size: 8px;
-    animation: sparkle 3s ease-in-out infinite;
-    pointer-events: none;
-  }
-  .sparkle:nth-child(1) { top: 8px; right: 18px; animation-delay: 0s; }
-  .sparkle:nth-child(2) { top: 22px; right: 10px; animation-delay: 1s; font-size: 6px; }
-  .sparkle:nth-child(3) { top: 14px; right: 28px; animation-delay: 2s; font-size: 5px; }
+  @keyframes sparkle { 0%,100%{opacity:0;transform:scale(0.5) rotate(0deg)} 50%{opacity:1;transform:scale(1) rotate(180deg)} }
+  .sparkle { position: absolute; font-size: 8px; animation: sparkle 3s ease-in-out infinite; pointer-events: none; }
+  .sparkle:nth-child(1){top:8px;right:18px;animation-delay:0s}
+  .sparkle:nth-child(2){top:22px;right:10px;animation-delay:1s;font-size:6px}
+  .sparkle:nth-child(3){top:14px;right:28px;animation-delay:2s;font-size:5px}
 
-  /* ── Panel ── */
-  .panel {
-    margin-top: 20px; background: #0d1117;
-    border: 1px solid #1d4ed855; border-radius: 20px;
-    padding: 22px; width: 100%; max-width: 400px;
-    display: none;
-    box-shadow: 0 8px 32px #0008;
-  }
+  .panel { margin-top: 20px; background: #0d1117; border: 1px solid #1d4ed855; border-radius: 20px; padding: 22px; width: 100%; max-width: 400px; display: none; box-shadow: 0 8px 32px #0008; }
   .panel.visible { display: block; }
   .panel-title { font-size: 13px; color: #93c5fd; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  input[type=time] {
-    width: 100%; padding: 14px; border-radius: 12px;
-    border: 1px solid #1e3a5f; background: #060a12;
-    color: #fff; font-size: 26px; text-align: center;
-    outline: none; font-weight: 700; font-family: inherit;
-    letter-spacing: 2px;
-  }
+  input[type=time] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #1e3a5f; background: #060a12; color: #fff; font-size: 26px; text-align: center; outline: none; font-weight: 700; font-family: inherit; letter-spacing: 2px; }
   .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-  .btn-confirm {
-    flex: 1; padding: 14px; border-radius: 12px; border: none;
-    background: linear-gradient(135deg, #ea580c, #f97316);
-    color: #fff; font-weight: 800; font-size: 14px; cursor: pointer;
-    font-family: inherit; box-shadow: 0 4px 16px #f9731640;
-    transition: opacity 0.15s;
-  }
+  .btn-confirm { flex: 1; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg,#ea580c,#f97316); color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 16px #f9731640; transition: opacity 0.15s; }
   .btn-confirm:disabled { opacity: 0.5; }
-  .btn-cancel {
-    flex: 1; padding: 14px; border-radius: 12px;
-    border: 1px solid #1e293b; background: transparent;
-    color: #475569; font-size: 14px; cursor: pointer; font-family: inherit;
-  }
-
-  /* ── WhatsApp ── */
-  .btn-whatsapp {
-    margin-top: 32px; padding: 15px 40px; border-radius: 50px; border: none;
-    background: linear-gradient(135deg, #25d366, #128c7e);
-    color: #fff; font-weight: 800; font-size: 15px; cursor: pointer;
-    display: flex; align-items: center; gap: 10px;
-    box-shadow: 0 4px 28px #25d36650; font-family: inherit;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .btn-whatsapp:active { transform: scale(0.97); box-shadow: 0 2px 12px #25d36640; }
-
+  .btn-cancel { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #1e293b; background: transparent; color: #475569; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .btn-whatsapp { margin-top: 32px; padding: 15px 40px; border-radius: 50px; border: none; background: linear-gradient(135deg,#25d366,#128c7e); color: #fff; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 28px #25d36650; font-family: inherit; transition: transform 0.15s; }
+  .btn-whatsapp:active { transform: scale(0.97); }
   .footer { margin-top: 18px; font-size: 10px; color: #1e293b; text-align: center; line-height: 2; }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="label">Polytech Lille</div>
   <h1>⚡ Bornes de recharge</h1>
   <div class="stats">
     <span class="stat-libre" id="stat-libres">● 6 libres</span>
-    <span class="stat-occupe" id="stat-occupees">● 0 occupée</span>
+    <span class="stat-occupe" id="stat-occupees">● 0 en charge</span>
+    <span class="stat-alarm" id="stat-alarmes" style="display:none">● 0 ⚠</span>
   </div>
   <div class="conn" id="conn-status" style="color:#3d4555">Connexion…</div>
 </div>
@@ -227,34 +175,26 @@
   <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   Partager sur WhatsApp
 </button>
-
-<div class="footer" id="footer">sync auto 15s</div>
+<div class="footer">sync auto 15s</div>
 
 <script>
 const BORNES = ["B1","B2","B3","B4","B5","B6"];
 const API = "/api/bornes";
 const POLL = 15000;
-let state = Object.fromEntries(BORNES.map(id => [id,{status:"libre",fin:null}]));
+let state = Object.fromEntries(BORNES.map(id=>[id,{status:"libre",fin:null}]));
 let selected = null;
 
-async function apiRead() {
-  const r = await fetch(API); if(!r.ok) throw new Error(); return r.json();
-}
-async function apiWrite(s) {
-  const r = await fetch(API,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});
-  if(!r.ok) throw new Error();
-}
+async function apiRead(){const r=await fetch(API);if(!r.ok)throw new Error();return r.json();}
+async function apiWrite(s){const r=await fetch(API,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});if(!r.ok)throw new Error();}
 
 function fmtH(iso){if(!iso)return"";return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtMin(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
+function isAlarme(b){return b.status==="occupe"&&b.fin&&new Date(b.fin)<Date.now();}
 function progress(fin){
-  if(!fin) return 0;
-  const finT = new Date(fin).getTime();
-  const now = Date.now();
-  // Suppose une charge de 4h max
-  const total = 4*3600*1000;
-  const elapsed = total - (finT - now);
-  return Math.min(100, Math.max(0, Math.round(elapsed/total*100)));
+  if(!fin)return 0;
+  const total=4*3600*1000;
+  const elapsed=total-(new Date(fin).getTime()-Date.now());
+  return Math.min(100,Math.max(0,Math.round(elapsed/total*100)));
 }
 
 function setConn(s,t){
@@ -265,33 +205,38 @@ function setConn(s,t){
 }
 
 function render(){
-  const grid=document.getElementById("grid"); grid.innerHTML="";
-  let libres=0, occupees=0;
+  const grid=document.getElementById("grid");grid.innerHTML="";
+  let libres=0,occupees=0,alarmes=0;
   BORNES.forEach(id=>{
     const b=state[id];
-    if(b.status==="libre") libres++;
-    if(b.status==="occupe") occupees++;
+    const alarme=isAlarme(b);
+    if(b.status==="libre")libres++;
+    else if(b.status==="occupe"&&!alarme)occupees++;
+    else if(alarme)alarmes++;
     const min=fmtMin(b.fin);
     const pct=progress(b.fin);
+    const cardClass=alarme?"alarme":b.status;
     const div=document.createElement("div");
-    div.className=`borne ${b.status}${selected===id?" selected":""}`;
+    div.className=`borne ${cardClass}${selected===id?" selected":""}`;
 
-    let inner = `<div class="borne-top">
-      <div>
-        <div class="borne-id">${id}</div>
-        <div class="borne-status">${b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
-      </div>
-      <div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div>
-    </div>`;
+    let inner=`<div class="borne-top"><div>
+      <div class="borne-id">${id}</div>
+      <div class="borne-status">${alarme?"Charge terminée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
+    </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
 
     if(b.status==="libre"){
-      inner += `<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;
+      inner+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;
     }
 
-    if(b.status==="occupe"){
-      inner += `<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
+    if(alarme){
+      inner+=`<div class="alarm-banner">
+        <span class="alarm-icon">🔔</span>
+        <span class="alarm-text">Débranchez SVP !</span>
+      </div>`;
+    } else if(b.status==="occupe"){
+      inner+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){
-        inner += `<div class="fin-box">
+        inner+=`<div class="fin-box">
           <div class="fin-label">Fin estimée</div>
           <div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div>
         </div>
@@ -299,36 +244,37 @@ function render(){
       }
     }
 
-    inner += `<div class="borne-actions">
-      <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre en service":"Hors service"}</button>
-      <span class="tap-hint">${b.status==="libre"?"Tap pour occuper":b.status==="occupe"?"Tap pour libérer":""}</span>
+    inner+=`<div class="borne-actions">
+      <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>
+      <span class="tap-hint">${b.status==="libre"?"Tap pour occuper":alarme?"Tap pour libérer":b.status==="occupe"?"Tap pour libérer":""}</span>
     </div>`;
 
-    div.innerHTML = inner;
-
-    if(b.status!=="hors-service") div.addEventListener("click",e=>{
-      if(e.target.classList.contains("hs-btn"))return;
-      handleBorne(id);
-    });
+    div.innerHTML=inner;
+    if(b.status!=="hors-service")div.addEventListener("click",e=>{if(e.target.classList.contains("hs-btn"))return;handleBorne(id);});
     div.querySelector(".hs-btn").addEventListener("click",e=>{e.stopPropagation();toggleHS(id);});
     grid.appendChild(div);
   });
 
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
   document.getElementById("stat-occupees").textContent=`● ${occupees} en charge`;
+  const alEl=document.getElementById("stat-alarmes");
+  if(alarmes>0){alEl.style.display="";alEl.textContent=`● ${alarmes} à débrancher`;}
+  else{alEl.style.display="none";}
 }
 
 function flashBorne(id){
-  const cards = document.querySelectorAll(".borne");
-  const idx = BORNES.indexOf(id);
-  if(cards[idx]){ cards[idx].classList.add("flash"); setTimeout(()=>cards[idx].classList.remove("flash"),400); }
+  setTimeout(()=>{
+    const cards=document.querySelectorAll(".borne");
+    const idx=BORNES.indexOf(id);
+    if(cards[idx]){cards[idx].classList.add("flash");setTimeout(()=>cards[idx].classList.remove("flash"),400);}
+  },50);
 }
 
 function handleBorne(id){
   const b=state[id];
-  if(b.status==="occupe"){
+  if(b.status==="occupe"||isAlarme(b)){
     saveState({...state,[id]:{status:"libre",fin:null}});
-    flashBorne(id); selected=null; render();
+    flashBorne(id);selected=null;render();
   } else if(b.status==="libre"){
     selected=id;
     document.getElementById("panel-title").textContent=`Borne ${id} — Heure de fin`;
@@ -348,59 +294,47 @@ async function toggleHS(id){
 document.getElementById("btn-confirm").addEventListener("click",async()=>{
   if(!selected)return;
   const[h,m]=document.getElementById("time-input").value.split(":").map(Number);
-  const fin=new Date(); fin.setHours(h,m,0,0);
-  if(fin<Date.now()) fin.setDate(fin.getDate()+1);
+  const fin=new Date();fin.setHours(h,m,0,0);
+  if(fin<Date.now())fin.setDate(fin.getDate()+1);
   const btn=document.getElementById("btn-confirm");
-  btn.disabled=true; btn.textContent="Enregistrement…";
+  btn.disabled=true;btn.textContent="Enregistrement…";
   await saveState({...state,[selected]:{status:"occupe",fin:fin.toISOString()}});
-  flashBorne(selected);
-  selected=null;
+  flashBorne(selected);selected=null;
   document.getElementById("panel").classList.remove("visible");
-  btn.disabled=false; btn.textContent="⚡ Confirmer";
+  btn.disabled=false;btn.textContent="⚡ Confirmer";
 });
 
 document.getElementById("btn-cancel").addEventListener("click",()=>{
-  selected=null;
-  document.getElementById("panel").classList.remove("visible");
-  render();
+  selected=null;document.getElementById("panel").classList.remove("visible");render();
 });
 
 async function saveState(next){
-  state=next; render();
-  try{
-    await apiWrite(next);
-    setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));
-  } catch{ setConn("error"); }
+  state=next;render();
+  try{await apiWrite(next);setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
+  catch{setConn("error");}
 }
 
 async function poll(){
-  try{
-    const data=await apiRead();
-    state=data; render();
-    setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));
-  } catch{ setConn("error"); }
+  try{const data=await apiRead();state=data;render();setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
+  catch{setConn("error");}
 }
-
-// Update progress bars every minute
-setInterval(render, 60000);
 
 document.getElementById("btn-whatsapp").addEventListener("click",()=>{
   const heure=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   const lines=[`🔌 *Bornes Polytech Lille* — ${heure}`,"───────────────"];
   BORNES.forEach(id=>{
     const b=state[id];
-    if(b.status==="libre") lines.push(`🟢 ${id} — Libre`);
-    else if(b.status==="occupe"){
-      const min=fmtMin(b.fin);
-      lines.push(`🔴 ${id} — En charge · fin ~${fmtH(b.fin)}${min>0?` (${min} min)`:""}`);
-    } else lines.push(`⚫ ${id} — Hors service`);
+    if(isAlarme(b))lines.push(`🔴 ${id} — ⚠ À DÉBRANCHER`);
+    else if(b.status==="libre")lines.push(`🟢 ${id} — Libre`);
+    else if(b.status==="occupe"){const min=fmtMin(b.fin);lines.push(`🟡 ${id} — En charge · fin ~${fmtH(b.fin)}${min>0?` (${min} min)`:""}`);}
+    else lines.push(`⚫ ${id} — Hors service`);
   });
-  lines.push("───────────────");
-  lines.push("_Mis à jour manuellement_");
+  lines.push("───────────────");lines.push("_Mis à jour manuellement_");
   window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
 });
 
-render(); poll(); setInterval(poll,POLL);
+setInterval(render,30000);
+render();poll();setInterval(poll,POLL);
 </script>
 </body>
 </html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bornes Polytech Lille</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #0a0d14; font-family: 'DM Sans','Segoe UI',sans-serif; color: #e2e8f0; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+  .header { text-align: center; margin-bottom: 24px; }
+  .label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #4b5563; margin-bottom: 6px; }
+  h1 { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+  .stats { margin-top: 10px; display: flex; gap: 20px; justify-content: center; font-size: 14px; }
+  .stat-libre { color: #22c55e; font-weight: 600; }
+  .stat-occupe { color: #f97316; font-weight: 600; }
+  .conn { margin-top: 6px; font-size: 11px; }
+  .grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; width: 100%; max-width: 380px; }
+  .borne { border-radius: 16px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; }
+  .borne.libre { background: #0f1822; border: 1px solid #22c55e30; }
+  .borne.occupe { background: #1a1108; border: 1px solid #f9731640; }
+  .borne.hors-service { background: #0f1014; border: 1px solid #1f2937; cursor: default; }
+  .borne.selected { border-color: #60a5fa !important; box-shadow: 0 0 0 3px #60a5fa20; }
+  .borne-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .borne-id { font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
+  .borne-status { font-size: 12px; margin-top: 4px; font-weight: 600; }
+  .libre .borne-status { color: #22c55e; }
+  .occupe .borne-status { color: #f97316; }
+  .hors-service .borne-status { color: #6b7280; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-top: 2px; flex-shrink: 0; }
+  .libre .dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+  .occupe .dot { background: #f97316; }
+  .hors-service .dot { background: #6b7280; }
+  .fin-box { margin-top: 10px; }
+  .fin-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+  .fin-heure { font-size: 16px; font-weight: 700; color: #fb923c; margin-top: 2px; }
+  .fin-min { font-size: 11px; color: #78716c; margin-left: 5px; font-weight: 400; }
+  .borne-actions { margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .hs-btn { font-size: 10px; cursor: pointer; text-decoration: underline; color: #1f2937; background: none; border: none; font-family: inherit; }
+  .borne.hors-service .hs-btn { color: #22c55e66; }
+  .tap-hint { font-size: 10px; }
+  .libre .tap-hint { color: #22c55e33; }
+  .occupe .tap-hint { color: #60a5fa88; }
+  .panel { margin-top: 20px; background: #111827; border: 1px solid #1d4ed844; border-radius: 18px; padding: 20px; width: 100%; max-width: 380px; display: none; }
+  .panel.visible { display: block; }
+  .panel-title { font-size: 13px; color: #93c5fd; font-weight: 700; margin-bottom: 14px; }
+  input[type=time] { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #1e3a5f; background: #0a0d14; color: #fff; font-size: 24px; text-align: center; outline: none; font-weight: 700; }
+  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+  .btn-confirm { flex: 1; padding: 13px; border-radius: 10px; border: none; background: #ea580c; color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .btn-confirm:disabled { background: #7c2d12; }
+  .btn-cancel { flex: 1; padding: 13px; border-radius: 10px; border: 1px solid #1f2937; background: transparent; color: #6b7280; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .btn-whatsapp { margin-top: 28px; padding: 14px 36px; border-radius: 50px; border: none; background: linear-gradient(135deg,#25d366,#128c7e); color: #fff; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 24px #25d36640; font-family: inherit; }
+  .footer { margin-top: 16px; font-size: 11px; color: #374151; text-align: center; line-height: 1.8; }
+  /* Setup screen */
+  #setup { position: fixed; inset: 0; background: #0a0d14; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
+  #setup h2 { color: #fff; font-size: 18px; margin-bottom: 8px; }
+  #setup p { color: #6b7280; font-size: 13px; margin-bottom: 20px; text-align: center; max-width: 300px; }
+  #setup input { width: 100%; max-width: 340px; padding: 12px; border-radius: 10px; border: 1px solid #1e3a5f; background: #111827; color: #fff; font-size: 14px; outline: none; margin-bottom: 12px; font-family: monospace; }
+  #setup button { padding: 13px 32px; border-radius: 10px; border: none; background: #ea580c; color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<!-- Setup screen (premier lancement) -->
+<div id="setup">
+  <h2>⚡ Bornes Polytech</h2>
+  <p>Colle ton token GitHub (scope: gist) pour activer la synchronisation partagée</p>
+  <input type="password" id="token-input" placeholder="ghp_xxxxx..." />
+  <button id="setup-btn">Démarrer</button>
+</div>
+
+<div class="header">
+  <div class="label">Polytech Lille</div>
+  <h1>⚡ Bornes de recharge</h1>
+  <div class="stats">
+    <span class="stat-libre" id="stat-libres">● 6 libres</span>
+    <span class="stat-occupe" id="stat-occupees">● 0 occupée</span>
+  </div>
+  <div class="conn" id="conn-status"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="panel" id="panel">
+  <div class="panel-title" id="panel-title">Borne — Heure de fin estimée</div>
+  <input type="time" id="time-input" />
+  <div class="btn-row">
+    <button class="btn-confirm" id="btn-confirm">✓ Confirmer</button>
+    <button class="btn-cancel" id="btn-cancel">Annuler</button>
+  </div>
+</div>
+
+<button class="btn-whatsapp" id="btn-whatsapp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  Partager sur WhatsApp
+</button>
+
+<div class="footer" id="footer">sync auto 15s</div>
+
+<script>
+const BORNES = ["B1","B2","B3","B4","B5","B6"];
+const GIST_ID = "7c68734989e5d53c30ceebf6bb1a314d";
+const POLL = 15000;
+let TOKEN = "";
+let state = Object.fromEntries(BORNES.map(id => [id, {status:"libre",fin:null}]));
+let selected = null;
+
+// Setup
+const setupEl = document.getElementById("setup");
+const stored = localStorage.getItem("gh_token");
+if (stored) { TOKEN = stored; setupEl.style.display = "none"; init(); }
+
+document.getElementById("setup-btn").addEventListener("click", () => {
+  const val = document.getElementById("token-input").value.trim();
+  if (!val) return;
+  TOKEN = val;
+  localStorage.setItem("gh_token", val);
+  setupEl.style.display = "none";
+  init();
+});
+
+async function gistRead() {
+  const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    headers: { "Authorization": `token ${TOKEN}`, "Accept": "application/vnd.github.v3+json" }
+  });
+  if (!r.ok) throw new Error();
+  const data = await r.json();
+  return JSON.parse(data.files["bornes.json"].content);
+}
+
+async function gistWrite(s) {
+  const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    method: "PATCH",
+    headers: { "Authorization": `token ${TOKEN}`, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ files: { "bornes.json": { content: JSON.stringify(s) } } })
+  });
+  if (!r.ok) throw new Error();
+}
+
+function fmtH(iso) { if (!iso) return ""; return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}); }
+function fmtMin(iso) { if (!iso) return null; return Math.round((new Date(iso)-Date.now())/60000); }
+
+function setConn(s, t) {
+  const el = document.getElementById("conn-status");
+  if (s==="ok") { el.style.color="#22c55e66"; el.textContent=`✓ sync ${t}`; }
+  else if (s==="error") { el.style.color="#ef4444"; el.textContent="⚠ Erreur réseau"; }
+  else { el.style.color="#6b7280"; el.textContent="Connexion…"; }
+}
+
+function render() {
+  const grid = document.getElementById("grid"); grid.innerHTML="";
+  let libres=0, occupees=0;
+  BORNES.forEach(id => {
+    const b=state[id];
+    if(b.status==="libre") libres++;
+    if(b.status==="occupe") occupees++;
+    const min=fmtMin(b.fin);
+    const div=document.createElement("div");
+    div.className=`borne ${b.status}${selected===id?" selected":""}`;
+    div.innerHTML=`
+      <div class="borne-top"><div>
+        <div class="borne-id">${id}</div>
+        <div class="borne-status">${b.status==="libre"?"Libre":b.status==="occupe"?"Occupée":"Hors service"}</div>
+      </div><span class="dot"></span></div>
+      ${b.status==="occupe"&&b.fin?`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">(${min} min)</span>`:""}</div></div>`:""}
+      <div class="borne-actions">
+        <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"Remettre en service":"Hors service"}</button>
+        <span class="tap-hint">${b.status==="libre"?"Tap pour occuper":b.status==="occupe"?"Tap pour libérer":""}</span>
+      </div>`;
+    if(b.status!=="hors-service") div.addEventListener("click",e=>{if(e.target.classList.contains("hs-btn"))return;handleBorne(id);});
+    div.querySelector(".hs-btn").addEventListener("click",e=>{e.stopPropagation();toggleHS(id);});
+    grid.appendChild(div);
+  });
+  document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
+  document.getElementById("stat-occupees").textContent=`● ${occupees} occupée${occupees>1?"s":""}`;
+}
+
+function handleBorne(id) {
+  const b=state[id];
+  if(b.status==="occupe"){saveState({...state,[id]:{status:"libre",fin:null}});selected=null;render();}
+  else if(b.status==="libre"){
+    selected=id;
+    document.getElementById("panel-title").textContent=`Borne ${id} — Heure de fin estimée`;
+    const def=new Date(Date.now()+2*3600*1000);
+    document.getElementById("time-input").value=def.toTimeString().slice(0,5);
+    document.getElementById("panel").classList.add("visible");
+    render();
+  }
+}
+
+async function toggleHS(id) {
+  const b=state[id];
+  await saveState({...state,[id]:{status:b.status==="hors-service"?"libre":"hors-service",fin:null}});
+}
+
+document.getElementById("btn-confirm").addEventListener("click",async()=>{
+  if(!selected)return;
+  const [h,m]=document.getElementById("time-input").value.split(":").map(Number);
+  const fin=new Date();fin.setHours(h,m,0,0);
+  if(fin<Date.now())fin.setDate(fin.getDate()+1);
+  const btn=document.getElementById("btn-confirm");
+  btn.disabled=true;btn.textContent="Enregistrement…";
+  await saveState({...state,[selected]:{status:"occupe",fin:fin.toISOString()}});
+  selected=null;document.getElementById("panel").classList.remove("visible");
+  btn.disabled=false;btn.textContent="✓ Confirmer";
+});
+
+document.getElementById("btn-cancel").addEventListener("click",()=>{
+  selected=null;document.getElementById("panel").classList.remove("visible");render();
+});
+
+async function saveState(next) {
+  state=next;render();
+  try{await gistWrite(next);setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
+  catch{setConn("error");}
+}
+
+async function poll() {
+  try{const data=await gistRead();state=data;render();setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
+  catch{setConn("error");}
+}
+
+function init() { render(); poll(); setInterval(poll,POLL); }
+
+document.getElementById("btn-whatsapp").addEventListener("click",()=>{
+  const heure=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  const lines=[`🔌 *Bornes Polytech Lille* — ${heure}`,"───────────────"];
+  BORNES.forEach(id=>{
+    const b=state[id];
+    if(b.status==="libre")lines.push(`🟢 ${id} — Libre`);
+    else if(b.status==="occupe"){const min=fmtMin(b.fin);lines.push(`🔴 ${id} — Occupée · fin ~${fmtH(b.fin)}${min>0?` (${min} min)`:""}`);}
+    else lines.push(`⚫ ${id} — Hors service`);
+  });
+  lines.push("───────────────");lines.push("_Mis à jour manuellement_");
+  window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
+});
+</script>
+</body>
+</html>

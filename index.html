@@ -7,167 +7,163 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    min-height: 100vh;
-    background: #060a12;
-    font-family: 'Inter', sans-serif;
-    color: #e2e8f0;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 32px 16px 56px;
-  }
-  .header { text-align: center; margin-bottom: 28px; }
-  .label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #3d4555; margin-bottom: 8px; }
-  h1 { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
-  .stats { margin-top: 12px; display: flex; gap: 20px; justify-content: center; font-size: 13px; }
-  .stat-libre { color: #22c55e; font-weight: 700; }
-  .stat-occupe { color: #f97316; font-weight: 700; }
-  .stat-alarm { color: #ef4444; font-weight: 700; }
-  .conn { margin-top: 8px; font-size: 11px; }
-  .grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; width: 100%; max-width: 400px; }
+  body { min-height:100vh; background:#060a12; font-family:'Inter',sans-serif; color:#e2e8f0; display:flex; flex-direction:column; align-items:center; padding:32px 16px 56px; }
 
-  /* ── Borne card ── */
-  .borne {
-    border-radius: 20px; padding: 16px;
-    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-    position: relative; overflow: hidden;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .borne:active { transform: scale(0.97); }
-  .borne.selected { outline: 2px solid #60a5fa; outline-offset: 2px; }
-  .borne.libre {
-    background: linear-gradient(135deg, #0d1f14, #0a1a10);
-    border: 1px solid #166534;
-    box-shadow: 0 0 20px #16653420, inset 0 1px 0 #22c55e18;
-  }
-  .borne.occupe {
-    background: linear-gradient(135deg, #1c1108, #150d04);
-    border: 1px solid #9a3412;
-    box-shadow: 0 0 20px #f9731625, inset 0 1px 0 #f9731618;
-  }
-  .borne.hors-service {
-    background: #0c0e14; border: 1px solid #1e2233;
-    cursor: default; opacity: 0.6;
-  }
+  .header { text-align:center; margin-bottom:28px; }
+  .label { font-size:10px; letter-spacing:4px; text-transform:uppercase; color:#3d4555; margin-bottom:8px; }
+  h1 { font-size:26px; font-weight:800; color:#fff; letter-spacing:-0.5px; }
+  .stats { margin-top:12px; display:flex; flex-wrap:wrap; gap:12px 20px; justify-content:center; font-size:13px; }
+  .stat-libre{color:#22c55e;font-weight:700}
+  .stat-occupe{color:#f97316;font-weight:700}
+  .stat-alarm{color:#ef4444;font-weight:700}
+  .stat-resa{color:#818cf8;font-weight:700}
+  .conn{margin-top:8px;font-size:11px}
 
-  /* ── ALARME ── */
-  @keyframes alarm-bg {
-    0%,100% { background: linear-gradient(135deg, #1a0505, #0f0202); border-color: #ef4444; box-shadow: 0 0 30px #ef444450, inset 0 1px 0 #ef444430; }
-    50% { background: linear-gradient(135deg, #2d0808, #1a0404); border-color: #ff6b6b; box-shadow: 0 0 50px #ef444480, inset 0 1px 0 #ef444460; }
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; width:100%; max-width:400px; }
+
+  .borne { border-radius:20px; padding:16px; cursor:pointer; transition:transform 0.15s; position:relative; overflow:hidden; -webkit-tap-highlight-color:transparent; }
+  .borne:active{transform:scale(0.97)}
+  .borne.selected{outline:2px solid #60a5fa;outline-offset:2px}
+
+  .borne.libre{background:linear-gradient(135deg,#0d1f14,#0a1a10);border:1px solid #166534;box-shadow:0 0 20px #16653420,inset 0 1px 0 #22c55e18}
+  .borne.occupe{background:linear-gradient(135deg,#1c1108,#150d04);border:1px solid #9a3412;box-shadow:0 0 20px #f9731625,inset 0 1px 0 #f9731618}
+  .borne.hors-service{background:#0c0e14;border:1px solid #1e2233;cursor:default;opacity:0.6}
+
+  @keyframes alarm-bg{
+    0%,100%{background:linear-gradient(135deg,#1a0505,#0f0202);border-color:#ef4444;box-shadow:0 0 30px #ef444450,inset 0 1px 0 #ef444430}
+    50%{background:linear-gradient(135deg,#2d0808,#1a0404);border-color:#ff6b6b;box-shadow:0 0 50px #ef444480,inset 0 1px 0 #ef444460}
   }
-  .borne.alarme {
-    animation: alarm-bg 1s ease-in-out infinite;
-    cursor: pointer;
+  .borne.alarme{animation:alarm-bg 1s ease-in-out infinite;cursor:pointer}
+
+  /* ── RÉSERVÉE ── */
+  @keyframes resa-bg{
+    0%,100%{background:linear-gradient(135deg,#0f0c1f,#0a0815);border-color:#4f46e5;box-shadow:0 0 24px #4f46e530,inset 0 1px 0 #818cf820}
+    50%{background:linear-gradient(135deg,#13103a,#0d0a28);border-color:#818cf8;box-shadow:0 0 40px #818cf840,inset 0 1px 0 #818cf830}
   }
-  .alarm-banner {
-    display: flex; align-items: center; justify-content: center;
-    gap: 6px; margin: 8px 0 4px;
-    padding: 7px 10px; border-radius: 10px;
-    background: #ef444425; border: 1px solid #ef444450;
-  }
-  @keyframes alarm-icon {
-    0%,100% { transform: rotate(-8deg) scale(1); }
-    25% { transform: rotate(8deg) scale(1.15); }
-    50% { transform: rotate(-8deg) scale(1); }
-    75% { transform: rotate(8deg) scale(1.1); }
-  }
-  .alarm-icon { font-size: 16px; animation: alarm-icon 0.6s ease-in-out infinite; display: inline-block; }
-  @keyframes alarm-text {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.6; }
-  }
-  .alarm-text {
-    font-size: 11px; font-weight: 800; color: #ef4444;
-    text-transform: uppercase; letter-spacing: 1px;
-    animation: alarm-text 1s ease-in-out infinite;
-  }
+  .borne.reservee{animation:resa-bg 2s ease-in-out infinite;cursor:pointer}
 
-  @keyframes flash { 0%{opacity:1} 50%{opacity:0.3} 100%{opacity:1} }
-  .borne.flash { animation: flash 0.4s ease; }
+  @keyframes flash{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
+  .borne.flash{animation:flash 0.4s ease}
 
-  .dot-wrap { position: relative; width: 12px; height: 12px; flex-shrink: 0; margin-top: 3px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 0; left: 0; }
-  .libre .dot { background: #22c55e; }
-  .occupe .dot { background: #f97316; }
-  .alarme .dot { background: #ef4444; }
-  .hors-service .dot { background: #4b5563; }
-  @keyframes pulse-ring { 0%{transform:scale(1);opacity:0.6} 100%{transform:scale(2.4);opacity:0} }
-  .dot-ring { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 0; left: 0; }
-  .libre .dot-ring { background: #22c55e; animation: pulse-ring 2s ease-out infinite; }
-  .occupe .dot-ring { background: #f97316; animation: pulse-ring 1.2s ease-out infinite; }
-  .alarme .dot-ring { background: #ef4444; animation: pulse-ring 0.6s ease-out infinite; }
+  .dot-wrap{position:relative;width:12px;height:12px;flex-shrink:0;margin-top:3px}
+  .dot{width:12px;height:12px;border-radius:50%;position:absolute;top:0;left:0}
+  .libre .dot{background:#22c55e}
+  .occupe .dot{background:#f97316}
+  .alarme .dot{background:#ef4444}
+  .reservee .dot{background:#818cf8}
+  .hors-service .dot{background:#4b5563}
+  @keyframes pulse-ring{0%{transform:scale(1);opacity:0.6}100%{transform:scale(2.4);opacity:0}}
+  .dot-ring{width:12px;height:12px;border-radius:50%;position:absolute;top:0;left:0}
+  .libre .dot-ring{background:#22c55e;animation:pulse-ring 2s ease-out infinite}
+  .occupe .dot-ring{background:#f97316;animation:pulse-ring 1.2s ease-out infinite}
+  .alarme .dot-ring{background:#ef4444;animation:pulse-ring 0.6s ease-out infinite}
+  .reservee .dot-ring{background:#818cf8;animation:pulse-ring 1.5s ease-out infinite}
 
-  .borne-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .borne-id { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
-  .borne-status { font-size: 12px; margin-top: 5px; font-weight: 600; letter-spacing: 0.3px; }
-  .libre .borne-status { color: #4ade80; }
-  .occupe .borne-status { color: #fb923c; }
-  .alarme .borne-status { color: #ef4444; }
-  .hors-service .borne-status { color: #6b7280; }
+  .borne-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .borne-id{font-size:22px;font-weight:800;color:#fff;line-height:1}
+  .borne-status{font-size:12px;margin-top:5px;font-weight:600;letter-spacing:0.3px}
+  .libre .borne-status{color:#4ade80}
+  .occupe .borne-status{color:#fb923c}
+  .alarme .borne-status{color:#ef4444}
+  .reservee .borne-status{color:#a5b4fc}
+  .hors-service .borne-status{color:#6b7280}
 
-  @keyframes zap {
-    0%,100% { opacity: 0.2; transform: scaleY(0.8); filter: brightness(1); }
-    50% { opacity: 1; transform: scaleY(1.1); filter: brightness(1.8) drop-shadow(0 0 6px #f97316); }
-  }
-  .lightning-wrap { display: flex; justify-content: center; align-items: center; margin: 10px 0 4px; height: 32px; }
-  .lightning { font-size: 24px; animation: zap 0.9s ease-in-out infinite; display: inline-block; }
-  .lightning:nth-child(2) { animation-delay: 0.3s; font-size: 18px; }
-  .lightning:nth-child(3) { animation-delay: 0.6s; font-size: 14px; }
+  .alarm-banner{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px 0 4px;padding:7px 10px;border-radius:10px;background:#ef444425;border:1px solid #ef444450}
+  @keyframes alarm-icon{0%,100%{transform:rotate(-8deg) scale(1)}25%{transform:rotate(8deg) scale(1.15)}50%{transform:rotate(-8deg) scale(1)}75%{transform:rotate(8deg) scale(1.1)}}
+  .alarm-icon{font-size:16px;animation:alarm-icon 0.6s ease-in-out infinite;display:inline-block}
+  @keyframes alarm-text{0%,100%{opacity:1}50%{opacity:0.6}}
+  .alarm-text{font-size:11px;font-weight:800;color:#ef4444;text-transform:uppercase;letter-spacing:1px;animation:alarm-text 1s ease-in-out infinite}
 
-  .progress-wrap { margin-top: 8px; background: #ffffff12; border-radius: 6px; height: 5px; overflow: hidden; }
-  .progress-bar { height: 100%; border-radius: 6px; background: linear-gradient(90deg,#f97316,#fbbf24); transition: width 1s linear; box-shadow: 0 0 8px #f9731680; }
+  /* Résa info box */
+  .resa-box{margin:10px 0 4px;padding:8px 10px;border-radius:10px;background:#818cf815;border:1px solid #818cf830}
+  .resa-name{font-size:14px;font-weight:800;color:#a5b4fc}
+  .resa-timer{font-size:11px;color:#6366f1;margin-top:3px;font-weight:600}
+  .resa-timer.urgent{color:#ef4444}
 
-  .fin-box { margin-top: 8px; }
-  .fin-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
-  .fin-heure { font-size: 17px; font-weight: 700; color: #fb923c; margin-top: 2px; line-height: 1; }
-  .fin-min { font-size: 11px; color: #92400e; margin-left: 5px; font-weight: 500; }
+  /* Bouton réserver */
+  .btn-reserver{width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #4f46e5;background:#4f46e515;color:#818cf8;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s}
+  .btn-reserver:hover{background:#4f46e525}
 
-  .borne-actions { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-  .hs-btn { font-size: 9px; cursor: pointer; text-decoration: underline; color: #1e293b; background: none; border: none; font-family: inherit; padding: 0; }
-  .borne.hors-service .hs-btn { color: #22c55e55; }
-  .tap-hint { font-size: 9px; font-weight: 500; }
-  .libre .tap-hint { color: #22c55e30; }
-  .occupe .tap-hint { color: #f9731650; }
-  .alarme .tap-hint { color: #ef444470; font-weight: 700; }
+  @keyframes zap{0%,100%{opacity:0.2;transform:scaleY(0.8);filter:brightness(1)}50%{opacity:1;transform:scaleY(1.1);filter:brightness(1.8) drop-shadow(0 0 6px #f97316)}}
+  .lightning-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0 4px;height:32px}
+  .lightning{font-size:24px;animation:zap 0.9s ease-in-out infinite;display:inline-block}
+  .lightning:nth-child(2){animation-delay:0.3s;font-size:18px}
+  .lightning:nth-child(3){animation-delay:0.6s;font-size:14px}
 
-  @keyframes sparkle { 0%,100%{opacity:0;transform:scale(0.5) rotate(0deg)} 50%{opacity:1;transform:scale(1) rotate(180deg)} }
-  .sparkle { position: absolute; font-size: 8px; animation: sparkle 3s ease-in-out infinite; pointer-events: none; }
+  .progress-wrap{margin-top:8px;background:#ffffff12;border-radius:6px;height:5px;overflow:hidden}
+  .progress-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,#f97316,#fbbf24);transition:width 1s linear;box-shadow:0 0 8px #f9731680}
+
+  .fin-box{margin-top:8px}
+  .fin-label{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:1.5px}
+  .fin-heure{font-size:17px;font-weight:700;color:#fb923c;margin-top:2px;line-height:1}
+  .fin-min{font-size:11px;color:#92400e;margin-left:5px;font-weight:500}
+
+  .borne-actions{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  .hs-btn{font-size:9px;cursor:pointer;text-decoration:underline;color:#1e293b;background:none;border:none;font-family:inherit;padding:0}
+  .borne.hors-service .hs-btn{color:#22c55e55}
+  .tap-hint{font-size:9px;font-weight:500}
+  .libre .tap-hint{color:#22c55e30}
+  .occupe .tap-hint{color:#f9731650}
+  .alarme .tap-hint{color:#ef444470;font-weight:700}
+  .reservee .tap-hint{color:#818cf870;font-weight:700}
+
+  @keyframes sparkle{0%,100%{opacity:0;transform:scale(0.5) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+  .sparkle{position:absolute;font-size:8px;animation:sparkle 3s ease-in-out infinite;pointer-events:none}
   .sparkle:nth-child(1){top:8px;right:18px;animation-delay:0s}
   .sparkle:nth-child(2){top:22px;right:10px;animation-delay:1s;font-size:6px}
   .sparkle:nth-child(3){top:14px;right:28px;animation-delay:2s;font-size:5px}
 
-  .panel { margin-top: 20px; background: #0d1117; border: 1px solid #1d4ed855; border-radius: 20px; padding: 22px; width: 100%; max-width: 400px; display: none; box-shadow: 0 8px 32px #0008; }
-  .panel.visible { display: block; }
-  .panel-title { font-size: 13px; color: #93c5fd; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  input[type=time] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #1e3a5f; background: #060a12; color: #fff; font-size: 26px; text-align: center; outline: none; font-weight: 700; font-family: inherit; letter-spacing: 2px; }
-  .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-  .btn-confirm { flex: 1; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg,#ea580c,#f97316); color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 16px #f9731640; transition: opacity 0.15s; }
-  .btn-confirm:disabled { opacity: 0.5; }
-  .btn-cancel { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid #1e293b; background: transparent; color: #475569; font-size: 14px; cursor: pointer; font-family: inherit; }
-  .btn-whatsapp { margin-top: 32px; padding: 15px 40px; border-radius: 50px; border: none; background: linear-gradient(135deg,#25d366,#128c7e); color: #fff; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 28px #25d36650; font-family: inherit; transition: transform 0.15s; }
-  .btn-whatsapp:active { transform: scale(0.97); }
-  .footer { margin-top: 18px; font-size: 10px; color: #1e293b; text-align: center; line-height: 2; }
+  /* Panels */
+  .panel{margin-top:20px;background:#0d1117;border:1px solid #1d4ed855;border-radius:20px;padding:22px;width:100%;max-width:400px;display:none;box-shadow:0 8px 32px #0008}
+  .panel.visible{display:block}
+  .panel-title{font-size:13px;color:#93c5fd;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  input[type=time]{width:100%;padding:14px;border-radius:12px;border:1px solid #1e3a5f;background:#060a12;color:#fff;font-size:26px;text-align:center;outline:none;font-weight:700;font-family:inherit;letter-spacing:2px}
+  input[type=text]{width:100%;padding:14px;border-radius:12px;border:1px solid #312e81;background:#060a12;color:#fff;font-size:20px;text-align:center;outline:none;font-weight:700;font-family:inherit;letter-spacing:1px}
+  input[type=text]::placeholder{color:#3d4555;font-weight:400}
+  .btn-row{display:flex;gap:10px;margin-top:14px}
+  .btn-confirm{flex:1;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px #f9731640;transition:opacity 0.15s}
+  .btn-confirm:disabled{opacity:0.5}
+  .btn-confirm.blue{background:linear-gradient(135deg,#4f46e5,#818cf8);box-shadow:0 4px 16px #4f46e540}
+  .btn-cancel{flex:1;padding:14px;border-radius:12px;border:1px solid #1e293b;background:transparent;color:#475569;font-size:14px;cursor:pointer;font-family:inherit}
+
+  .btn-whatsapp{margin-top:32px;padding:15px 40px;border-radius:50px;border:none;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 28px #25d36650;font-family:inherit;transition:transform 0.15s}
+  .btn-whatsapp:active{transform:scale(0.97)}
+  .footer{margin-top:18px;font-size:10px;color:#1e293b;text-align:center;line-height:2}
 </style>
 </head>
 <body>
+
 <div class="header">
   <div class="label">Polytech Lille</div>
   <h1>⚡ Bornes de recharge</h1>
   <div class="stats">
     <span class="stat-libre" id="stat-libres">● 6 libres</span>
-    <span class="stat-occupe" id="stat-occupees">● 0 en charge</span>
+    <span class="stat-occupe" id="stat-occupees" style="display:none">● 0 en charge</span>
     <span class="stat-alarm" id="stat-alarmes" style="display:none">● 0 ⚠</span>
+    <span class="stat-resa" id="stat-resas" style="display:none">● 0 réservée</span>
   </div>
   <div class="conn" id="conn-status" style="color:#3d4555">Connexion…</div>
 </div>
 
 <div class="grid" id="grid"></div>
 
-<div class="panel" id="panel">
-  <div class="panel-title">🔌 <span id="panel-title">Borne — Heure de fin</span></div>
+<!-- Panel charge -->
+<div class="panel" id="panel-charge">
+  <div class="panel-title">🔌 <span id="panel-charge-title">Borne — Heure de fin</span></div>
   <input type="time" id="time-input" />
   <div class="btn-row">
     <button class="btn-confirm" id="btn-confirm">⚡ Confirmer</button>
-    <button class="btn-cancel" id="btn-cancel">Annuler</button>
+    <button class="btn-cancel" id="btn-cancel-charge">Annuler</button>
+  </div>
+</div>
+
+<!-- Panel réservation -->
+<div class="panel" id="panel-resa">
+  <div class="panel-title">🔵 <span id="panel-resa-title">Réserver la borne</span></div>
+  <input type="text" id="prenom-input" placeholder="Votre prénom…" maxlength="20" />
+  <div class="btn-row">
+    <button class="btn-confirm blue" id="btn-confirm-resa">Réserver 10 min</button>
+    <button class="btn-cancel" id="btn-cancel-resa">Annuler</button>
   </div>
 </div>
 
@@ -178,23 +174,36 @@
 <div class="footer">sync auto 15s</div>
 
 <script>
-const BORNES = ["B1","B2","B3","B4","B5","B6"];
-const API = "/api/bornes";
-const POLL = 15000;
-let state = Object.fromEntries(BORNES.map(id=>[id,{status:"libre",fin:null}]));
-let selected = null;
+const BORNES=["B1","B2","B3","B4","B5","B6"];
+const API="/api/bornes";
+const POLL=15000;
+const RESA_DURATION=10*60*1000; // 10 min
+
+let state=Object.fromEntries(BORNES.map(id=>[id,{status:"libre",fin:null,resa:null,resaFin:null}]));
+let selectedCharge=null;
+let selectedResa=null;
 
 async function apiRead(){const r=await fetch(API);if(!r.ok)throw new Error();return r.json();}
 async function apiWrite(s){const r=await fetch(API,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});if(!r.ok)throw new Error();}
 
 function fmtH(iso){if(!iso)return"";return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtMin(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
+function fmtSec(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/1000);}
 function isAlarme(b){return b.status==="occupe"&&b.fin&&new Date(b.fin)<Date.now();}
-function progress(fin){
-  if(!fin)return 0;
-  const total=4*3600*1000;
-  const elapsed=total-(new Date(fin).getTime()-Date.now());
-  return Math.min(100,Math.max(0,Math.round(elapsed/total*100)));
+function isResaExpired(b){return b.status==="reservee"&&b.resaFin&&new Date(b.resaFin)<Date.now();}
+function progress(fin){if(!fin)return 0;const total=4*3600*1000;const elapsed=total-(new Date(fin).getTime()-Date.now());return Math.min(100,Math.max(0,Math.round(elapsed/total*100)));}
+
+// Auto-expire réservations
+function checkExpiries(){
+  let changed=false;
+  const next={...state};
+  BORNES.forEach(id=>{
+    if(isResaExpired(next[id])){
+      next[id]={status:"libre",fin:null,resa:null,resaFin:null};
+      changed=true;
+    }
+  });
+  if(changed){saveState(next);}
 }
 
 function setConn(s,t){
@@ -205,23 +214,31 @@ function setConn(s,t){
 }
 
 function render(){
+  checkExpiries();
   const grid=document.getElementById("grid");grid.innerHTML="";
-  let libres=0,occupees=0,alarmes=0;
+  let libres=0,occupees=0,alarmes=0,resas=0;
+
   BORNES.forEach(id=>{
     const b=state[id];
     const alarme=isAlarme(b);
+    const reservee=b.status==="reservee";
     if(b.status==="libre")libres++;
     else if(b.status==="occupe"&&!alarme)occupees++;
     else if(alarme)alarmes++;
+    else if(reservee)resas++;
+
     const min=fmtMin(b.fin);
     const pct=progress(b.fin);
-    const cardClass=alarme?"alarme":b.status;
+    const resaSec=fmtSec(b.resaFin);
+    const resaMin=fmtMin(b.resaFin);
+    const cardClass=alarme?"alarme":reservee?"reservee":b.status;
+
     const div=document.createElement("div");
-    div.className=`borne ${cardClass}${selected===id?" selected":""}`;
+    div.className=`borne ${cardClass}${selectedCharge===id?" selected":""}`;
 
     let inner=`<div class="borne-top"><div>
       <div class="borne-id">${id}</div>
-      <div class="borne-status">${alarme?"Charge terminée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
+      <div class="borne-status">${alarme?"Charge terminée":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
     </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
 
     if(b.status==="libre"){
@@ -232,6 +249,13 @@ function render(){
       inner+=`<div class="alarm-banner">
         <span class="alarm-icon">🔔</span>
         <span class="alarm-text">Débranchez SVP !</span>
+      </div>
+      <button class="btn-reserver" data-id="${id}">🔵 Réserver cette borne</button>`;
+    } else if(reservee){
+      const urgent=resaSec!==null&&resaSec<120;
+      inner+=`<div class="resa-box">
+        <div class="resa-name">👤 ${b.resa||"?"}</div>
+        <div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin!==null&&resaMin>0?`${resaMin} min`:`< 1 min`}</div>
       </div>`;
     } else if(b.status==="occupe"){
       inner+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
@@ -246,66 +270,107 @@ function render(){
 
     inner+=`<div class="borne-actions">
       <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>
-      <span class="tap-hint">${b.status==="libre"?"Tap pour occuper":alarme?"Tap pour libérer":b.status==="occupe"?"Tap pour libérer":""}</span>
+      <span class="tap-hint">${b.status==="libre"?"Tap pour occuper":alarme?"Tap pour libérer":reservee?"Tap — je branche !":b.status==="occupe"?"Tap pour libérer":""}</span>
     </div>`;
 
     div.innerHTML=inner;
-    if(b.status!=="hors-service")div.addEventListener("click",e=>{if(e.target.classList.contains("hs-btn"))return;handleBorne(id);});
+
+    // Clic principal
+    if(b.status!=="hors-service"){
+      div.addEventListener("click",e=>{
+        if(e.target.classList.contains("hs-btn")||e.target.classList.contains("btn-reserver"))return;
+        handleBorne(id);
+      });
+    }
     div.querySelector(".hs-btn").addEventListener("click",e=>{e.stopPropagation();toggleHS(id);});
+    const btnResa=div.querySelector(".btn-reserver");
+    if(btnResa)btnResa.addEventListener("click",e=>{e.stopPropagation();openResa(id);});
+
     grid.appendChild(div);
   });
 
+  // Stats
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
-  document.getElementById("stat-occupees").textContent=`● ${occupees} en charge`;
-  const alEl=document.getElementById("stat-alarmes");
-  if(alarmes>0){alEl.style.display="";alEl.textContent=`● ${alarmes} à débrancher`;}
-  else{alEl.style.display="none";}
+  const elOcc=document.getElementById("stat-occupees");
+  elOcc.style.display=occupees>0?"":"none";
+  elOcc.textContent=`● ${occupees} en charge`;
+  const elAl=document.getElementById("stat-alarmes");
+  elAl.style.display=alarmes>0?"":"none";
+  elAl.textContent=`● ${alarmes} à débrancher`;
+  const elResa=document.getElementById("stat-resas");
+  elResa.style.display=resas>0?"":"none";
+  elResa.textContent=`● ${resas} réservée${resas>1?"s":""}`;
 }
 
-function flashBorne(id){
-  setTimeout(()=>{
-    const cards=document.querySelectorAll(".borne");
-    const idx=BORNES.indexOf(id);
-    if(cards[idx]){cards[idx].classList.add("flash");setTimeout(()=>cards[idx].classList.remove("flash"),400);}
-  },50);
+function openResa(id){
+  selectedResa=id;
+  document.getElementById("panel-resa-title").textContent=`Réserver borne ${id}`;
+  document.getElementById("prenom-input").value="";
+  document.getElementById("panel-resa").classList.add("visible");
+  document.getElementById("panel-resa").scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 function handleBorne(id){
   const b=state[id];
   if(b.status==="occupe"||isAlarme(b)){
-    saveState({...state,[id]:{status:"libre",fin:null}});
-    flashBorne(id);selected=null;render();
-  } else if(b.status==="libre"){
-    selected=id;
-    document.getElementById("panel-title").textContent=`Borne ${id} — Heure de fin`;
+    saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});
+  } else if(b.status==="reservee"){
+    // Brancher sur une borne réservée
+    selectedCharge=id;
+    document.getElementById("panel-charge-title").textContent=`Borne ${id} — Heure de fin`;
     const def=new Date(Date.now()+2*3600*1000);
     document.getElementById("time-input").value=def.toTimeString().slice(0,5);
-    document.getElementById("panel").classList.add("visible");
+    document.getElementById("panel-charge").classList.add("visible");
     render();
-    document.getElementById("panel").scrollIntoView({behavior:"smooth",block:"nearest"});
+    document.getElementById("panel-charge").scrollIntoView({behavior:"smooth",block:"nearest"});
+  } else if(b.status==="libre"){
+    selectedCharge=id;
+    document.getElementById("panel-charge-title").textContent=`Borne ${id} — Heure de fin`;
+    const def=new Date(Date.now()+2*3600*1000);
+    document.getElementById("time-input").value=def.toTimeString().slice(0,5);
+    document.getElementById("panel-charge").classList.add("visible");
+    render();
+    document.getElementById("panel-charge").scrollIntoView({behavior:"smooth",block:"nearest"});
   }
 }
 
 async function toggleHS(id){
   const b=state[id];
-  await saveState({...state,[id]:{status:b.status==="hors-service"?"libre":"hors-service",fin:null}});
+  await saveState({...state,[id]:{status:b.status==="hors-service"?"libre":"hors-service",fin:null,resa:null,resaFin:null}});
 }
 
+// Confirm charge
 document.getElementById("btn-confirm").addEventListener("click",async()=>{
-  if(!selected)return;
+  if(!selectedCharge)return;
   const[h,m]=document.getElementById("time-input").value.split(":").map(Number);
   const fin=new Date();fin.setHours(h,m,0,0);
   if(fin<Date.now())fin.setDate(fin.getDate()+1);
   const btn=document.getElementById("btn-confirm");
   btn.disabled=true;btn.textContent="Enregistrement…";
-  await saveState({...state,[selected]:{status:"occupe",fin:fin.toISOString()}});
-  flashBorne(selected);selected=null;
-  document.getElementById("panel").classList.remove("visible");
+  await saveState({...state,[selectedCharge]:{status:"occupe",fin:fin.toISOString(),resa:null,resaFin:null}});
+  selectedCharge=null;
+  document.getElementById("panel-charge").classList.remove("visible");
   btn.disabled=false;btn.textContent="⚡ Confirmer";
 });
+document.getElementById("btn-cancel-charge").addEventListener("click",()=>{
+  selectedCharge=null;document.getElementById("panel-charge").classList.remove("visible");render();
+});
 
-document.getElementById("btn-cancel").addEventListener("click",()=>{
-  selected=null;document.getElementById("panel").classList.remove("visible");render();
+// Confirm résa
+document.getElementById("btn-confirm-resa").addEventListener("click",async()=>{
+  if(!selectedResa)return;
+  const prenom=document.getElementById("prenom-input").value.trim();
+  if(!prenom)return;
+  const resaFin=new Date(Date.now()+RESA_DURATION).toISOString();
+  const btn=document.getElementById("btn-confirm-resa");
+  btn.disabled=true;btn.textContent="Réservation…";
+  await saveState({...state,[selectedResa]:{status:"reservee",fin:null,resa:prenom,resaFin}});
+  selectedResa=null;
+  document.getElementById("panel-resa").classList.remove("visible");
+  btn.disabled=false;btn.textContent="Réserver 10 min";
+});
+document.getElementById("btn-cancel-resa").addEventListener("click",()=>{
+  selectedResa=null;document.getElementById("panel-resa").classList.remove("visible");render();
 });
 
 async function saveState(next){
@@ -325,6 +390,7 @@ document.getElementById("btn-whatsapp").addEventListener("click",()=>{
   BORNES.forEach(id=>{
     const b=state[id];
     if(isAlarme(b))lines.push(`🔴 ${id} — ⚠ À DÉBRANCHER`);
+    else if(b.status==="reservee")lines.push(`🔵 ${id} — Réservée · ${b.resa} (10 min)`);
     else if(b.status==="libre")lines.push(`🟢 ${id} — Libre`);
     else if(b.status==="occupe"){const min=fmtMin(b.fin);lines.push(`🟡 ${id} — En charge · fin ~${fmtH(b.fin)}${min>0?` (${min} min)`:""}`);}
     else lines.push(`⚫ ${id} — Hors service`);
@@ -333,6 +399,7 @@ document.getElementById("btn-whatsapp").addEventListener("click",()=>{
   window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
 });
 
+// Refresh toutes les 30s pour le timer résa
 setInterval(render,30000);
 render();poll();setInterval(poll,POLL);
 </script>

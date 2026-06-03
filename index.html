@@ -8,7 +8,6 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
   body{min-height:100vh;background:#000;font-family:'Inter',sans-serif;color:#f1f5f9;display:flex;flex-direction:column;align-items:center;padding:32px 16px 56px}
-
   .header{text-align:center;margin-bottom:28px}
   .label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#475569;margin-bottom:8px}
   h1{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px}
@@ -18,109 +17,63 @@
   .stat-alarm{color:#f87171;font-weight:700}
   .stat-resa{color:#a5b4fc;font-weight:700}
   .conn{margin-top:8px;font-size:11px}
-
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;max-width:400px}
-
-  /* ── Cards ── */
   .borne{border-radius:18px;padding:16px;cursor:pointer;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:transform 0.12s}
   .borne:active{transform:scale(0.97)}
   .borne.selected{outline:2px solid #60a5fa;outline-offset:2px}
-
   .borne.libre{background:#0a1a0f;border:1.5px solid #16a34a}
   .borne.occupe{background:#1a0e00;border:1.5px solid #c2410c}
   .borne.hors-service{background:#111;border:1.5px solid #334155;cursor:default;opacity:0.55}
-
-  @keyframes alarm-bg{
-    0%,100%{background:#1a0000;border-color:#ef4444;box-shadow:0 0 28px #ef444440}
-    50%{background:#2a0000;border-color:#fca5a5;box-shadow:0 0 48px #ef444470}
-  }
+  @keyframes alarm-bg{0%,100%{background:#1a0000;border-color:#ef4444;box-shadow:0 0 28px #ef444440}50%{background:#2a0000;border-color:#fca5a5;box-shadow:0 0 48px #ef444470}}
   .borne.alarme{animation:alarm-bg 1s ease-in-out infinite;cursor:pointer}
-
-  @keyframes resa-bg{
-    0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}
-    50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}
-  }
+  @keyframes resa-bg{0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}}
   .borne.reservee{animation:resa-bg 2s ease-in-out infinite;cursor:pointer}
-
   @keyframes flash{0%,100%{opacity:1}50%{opacity:0.25}}
   .borne.flash{animation:flash 0.35s ease}
-
-  /* ── Dot ── */
   .dot-wrap{position:relative;width:12px;height:12px;flex-shrink:0;margin-top:3px}
   .dot,.dot-ring{width:12px;height:12px;border-radius:50%;position:absolute;top:0;left:0}
-  .libre .dot{background:#4ade80}
-  .occupe .dot{background:#fb923c}
-  .alarme .dot{background:#f87171}
-  .reservee .dot{background:#a5b4fc}
-  .hors-service .dot{background:#475569}
+  .libre .dot{background:#4ade80}.occupe .dot{background:#fb923c}.alarme .dot{background:#f87171}.reservee .dot{background:#a5b4fc}.hors-service .dot{background:#475569}
   @keyframes pulse-ring{0%{transform:scale(1);opacity:0.7}100%{transform:scale(2.6);opacity:0}}
   .libre .dot-ring{background:#4ade80;animation:pulse-ring 2s ease-out infinite}
   .occupe .dot-ring{background:#fb923c;animation:pulse-ring 1.2s ease-out infinite}
   .alarme .dot-ring{background:#f87171;animation:pulse-ring 0.6s ease-out infinite}
   .reservee .dot-ring{background:#a5b4fc;animation:pulse-ring 1.5s ease-out infinite}
-
-  /* ── Card header ── */
   .borne-top{display:flex;justify-content:space-between;align-items:flex-start}
   .borne-id{font-size:24px;font-weight:800;color:#fff;line-height:1}
   .borne-status{font-size:12px;margin-top:5px;font-weight:600}
-  .libre .borne-status{color:#86efac}
-  .occupe .borne-status{color:#fdba74}
-  .alarme .borne-status{color:#fca5a5}
-  .reservee .borne-status{color:#c7d2fe}
-  .hors-service .borne-status{color:#64748b}
-
-  /* ── Alarm banner ── */
+  .libre .borne-status{color:#86efac}.occupe .borne-status{color:#fdba74}.alarme .borne-status{color:#fca5a5}.reservee .borne-status{color:#c7d2fe}.hors-service .borne-status{color:#64748b}
   .alarm-banner{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 4px;padding:8px 10px;border-radius:10px;background:#450a0a;border:1px solid #ef444460}
   @keyframes shake{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
   .alarm-icon{font-size:16px;animation:shake 0.5s ease-in-out infinite;display:inline-block}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
   .alarm-text{font-size:12px;font-weight:800;color:#fca5a5;text-transform:uppercase;letter-spacing:0.8px;animation:blink 0.9s ease-in-out infinite}
-
-  /* ── Résa box ── */
   .resa-box{margin:10px 0 4px;padding:9px 11px;border-radius:10px;background:#1e1b4b;border:1px solid #4f46e5}
   .resa-name{font-size:15px;font-weight:800;color:#e0e7ff}
   .resa-timer{font-size:12px;color:#a5b4fc;margin-top:4px;font-weight:600}
   .resa-timer.urgent{color:#f87171}
-
-  /* ── Bouton réserver ── */
-  .btn-reserver{width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#c7d2fe;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-reserver{width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#c7d2fe;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
   .btn-reserver:active{background:#312e81}
-
-  /* ── Lightning ── */
   @keyframes zap{0%,100%{opacity:0.15;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1.1);filter:drop-shadow(0 0 5px #fb923c)}}
   .lightning-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0 4px;height:28px}
   .lightning{font-size:22px;animation:zap 0.9s ease-in-out infinite;display:inline-block}
   .lightning:nth-child(2){animation-delay:0.3s;font-size:17px}
   .lightning:nth-child(3){animation-delay:0.6s;font-size:13px}
-
-  /* ── Progress bar ── */
   .progress-wrap{margin-top:8px;background:#ffffff15;border-radius:6px;height:5px;overflow:hidden}
   .progress-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,#f97316,#fbbf24);box-shadow:0 0 6px #f9731660}
-
-  /* ── Fin estimée ── */
   .fin-box{margin-top:8px}
   .fin-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px}
   .fin-heure{font-size:17px;font-weight:800;color:#fdba74;margin-top:3px;line-height:1}
   .fin-min{font-size:11px;color:#78716c;margin-left:5px;font-weight:500}
-
-  /* ── Actions bar ── */
   .borne-actions{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
   .hs-btn{font-size:9px;cursor:pointer;text-decoration:underline;color:#334155;background:none;border:none;font-family:inherit;padding:0}
   .borne.hors-service .hs-btn{color:#4ade8055}
   .tap-hint{font-size:9px;font-weight:600}
-  .libre .tap-hint{color:#4ade8040}
-  .occupe .tap-hint{color:#fb923c50}
-  .alarme .tap-hint{color:#f8717160}
-  .reservee .tap-hint{color:#a5b4fc60}
-
-  /* ── Sparkles ── */
+  .libre .tap-hint{color:#4ade8040}.occupe .tap-hint{color:#fb923c50}.alarme .tap-hint{color:#f8717160}.reservee .tap-hint{color:#a5b4fc60}
   @keyframes sparkle{0%,100%{opacity:0;transform:scale(0.4) rotate(0deg)}50%{opacity:0.8;transform:scale(1) rotate(180deg)}}
   .sparkle{position:absolute;font-size:8px;animation:sparkle 3s ease-in-out infinite;pointer-events:none;color:#4ade80}
   .sparkle:nth-child(1){top:8px;right:18px;animation-delay:0s}
   .sparkle:nth-child(2){top:22px;right:10px;animation-delay:1s;font-size:6px}
   .sparkle:nth-child(3){top:14px;right:28px;animation-delay:2s;font-size:5px}
-
-  /* ── Panels ── */
   .panel{margin-top:20px;background:#0f172a;border:1.5px solid #1e3a5f;border-radius:20px;padding:22px;width:100%;max-width:400px;display:none;box-shadow:0 8px 40px #000a}
   .panel.visible{display:block}
   .panel-title{font-size:14px;color:#93c5fd;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
@@ -128,18 +81,14 @@
   input[type=text]{width:100%;padding:14px;border-radius:12px;border:1.5px solid #312e81;background:#020617;color:#e0e7ff;font-size:20px;text-align:center;outline:none;font-weight:700;font-family:inherit}
   input[type=text]::placeholder{color:#334155;font-weight:400}
   .btn-row{display:flex;gap:10px;margin-top:14px}
-  .btn-confirm{flex:1;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px #f9731640;transition:opacity 0.15s}
+  .btn-confirm{flex:1;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity 0.15s}
   .btn-confirm:disabled{opacity:0.4}
-  .btn-confirm.blue{background:linear-gradient(135deg,#4338ca,#818cf8);box-shadow:0 4px 16px #4338ca40}
+  .btn-confirm.blue{background:linear-gradient(135deg,#4338ca,#818cf8)}
   .btn-cancel{flex:1;padding:14px;border-radius:12px;border:1.5px solid #1e293b;background:transparent;color:#64748b;font-size:14px;cursor:pointer;font-family:inherit}
-
-  .btn-whatsapp{margin-top:32px;padding:16px 40px;border-radius:50px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-weight:800;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 28px #16a34a40;font-family:inherit;transition:transform 0.15s}
-  .btn-whatsapp:active{transform:scale(0.97)}
   .footer{margin-top:18px;font-size:10px;color:#1e293b;text-align:center;line-height:2}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="label">Polytech Lille</div>
   <h1>⚡ Bornes de recharge</h1>
@@ -221,36 +170,27 @@ function render(){
     const cardClass=alarme?"alarme":reservee?"reservee":b.status;
     const div=document.createElement("div");
     div.className=`borne ${cardClass}${selectedCharge===id?" selected":""}`;
-
     let html=`<div class="borne-top"><div>
       <div class="borne-id">${id}</div>
       <div class="borne-status">${alarme?"Charge terminée":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
     </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
-
     if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
-
     if(alarme){
       html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
     } else if(reservee){
       const urgent=resaSec!==null&&resaSec<120;
-      html+=`<div class="resa-box">
-        <div class="resa-name">👤 ${b.resa||"?"}</div>
-        <div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div>
-      </div>`;
+      html+=`<div class="resa-box"><div class="resa-name">👤 ${b.resa||"?"}</div><div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div></div>`;
     } else if(b.status==="occupe"){
       html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
     }
-
     if(b.status!=="hors-service"&&!reservee){
       html+=`<button class="btn-reserver" data-id="${id}">🔵 Réserver</button>`;
     }
-
     html+=`<div class="borne-actions">
       <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>
       <span class="tap-hint">${b.status==="libre"?"Tap pour brancher":alarme?"Tap pour libérer":reservee?"Tap — je branche !":b.status==="occupe"?"Tap pour libérer":""}</span>
     </div>`;
-
     div.innerHTML=html;
     if(b.status!=="hors-service"){
       div.addEventListener("click",e=>{
@@ -263,7 +203,6 @@ function render(){
     if(btnR)btnR.addEventListener("click",e=>{e.stopPropagation();openResa(id);});
     grid.appendChild(div);
   });
-
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
   const elO=document.getElementById("stat-occupees");elO.style.display=occupees>0?"":"none";elO.textContent=`● ${occupees} en charge`;
   const elA=document.getElementById("stat-alarmes");elA.style.display=alarmes>0?"":"none";elA.textContent=`● ${alarmes} à débrancher`;
@@ -334,19 +273,6 @@ async function poll(){
   try{const data=await apiRead();state=data;render();setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
   catch{setConn("error");}
 }
-
-  const lines=[`🔌 *Bornes Polytech Lille* — ${heure}`,"───────────────"];
-  BORNES.forEach(id=>{
-    const b=state[id];
-    if(isAlarme(b))lines.push(`🔴 ${id} — ⚠ À DÉBRANCHER`);
-    else if(b.status==="reservee")lines.push(`🔵 ${id} — Réservée · ${b.resa}`);
-    else if(b.status==="libre")lines.push(`🟢 ${id} — Libre`);
-    else if(b.status==="occupe"){const min=fmtMin(b.fin);lines.push(`🟡 ${id} — En charge · fin ~${fmtH(b.fin)}${min>0?` (${min} min)`:""}`);}
-    else lines.push(`⚫ ${id} — Hors service`);
-  });
-  lines.push("───────────────");lines.push("_Mis à jour manuellement_");
-  window.open(`https://wa.me/?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
-});
 
 setInterval(render,30000);
 render();poll();setInterval(poll,POLL);

@@ -23,7 +23,13 @@
   .borne.selected{outline:2px solid #60a5fa;outline-offset:2px}
   .borne.libre{background:#0a1a0f;border:1.5px solid #16a34a}
   .borne.occupe{background:#1a0e00;border:1.5px solid #c2410c}
-  .borne.hors-service{background:#111;border:1.5px solid #334155;cursor:default;opacity:0.55}
+  .borne.hors-service{background:#111;border:1.5px solid #334155;cursor:default;opacity:0.85}
+  @keyframes stripes{0%{background-position:0 0}100%{background-position:28px 0}}
+  .hs-stripes{margin:10px 0 4px;height:6px;border-radius:4px;background:repeating-linear-gradient(90deg,#1e293b 0px,#1e293b 10px,#0f172a 10px,#0f172a 18px);background-size:28px 100%;animation:stripes 1.2s linear infinite;opacity:0.7}
+  @keyframes wrench{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(15deg)}}
+  .hs-icon{font-size:18px;display:inline-block;animation:wrench 1.4s ease-in-out infinite;margin:8px 0 2px}
+  @keyframes hs-pulse{0%,100%{opacity:0.5}50%{opacity:0.9}}
+  .hs-label{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;animation:hs-pulse 2s ease-in-out infinite}
   @keyframes alarm-bg{0%,100%{background:#1a0000;border-color:#ef4444;box-shadow:0 0 28px #ef444440}50%{background:#2a0000;border-color:#fca5a5;box-shadow:0 0 48px #ef444470}}
   .borne.alarme{animation:alarm-bg 1s ease-in-out infinite;cursor:pointer}
   @keyframes resa-bg{0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}}
@@ -180,6 +186,7 @@ function render(){
       <div class="borne-status">${alarme?"Charge terminée":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
     </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
     if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
+    if(b.status==="hors-service"){html+=`<div style="text-align:center;padding:6px 0"><div class="hs-stripes"></div><div class="hs-icon">🔧</div><div class="hs-label">Hors service</div></div>`;}
     if(alarme){
       html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
     } else if(reservee){

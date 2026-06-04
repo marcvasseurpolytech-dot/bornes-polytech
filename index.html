@@ -193,7 +193,7 @@ function render(){
       html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;
     }
     if(b.status==="libre"){
-      html+=`<button class="btn-sans-appli" data-id="${id}">Occupée (sans appli)</button>`;
+      html+=`<button class="btn-sans-appli" data-id="${id}">Borne occupée</button>`;
     }
     html+=`<div class="borne-actions">
       <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>

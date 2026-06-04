@@ -190,7 +190,7 @@ function render(){
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
     }
     if(b.status!=="hors-service"&&!reservee){
-      html+=`<button class="btn-reserver" data-id="${id}">🔵 Réserver</button>`;
+      html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;
     }
     if(b.status==="libre"){
       html+=`<button class="btn-sans-appli" data-id="${id}">Occupée (sans appli)</button>`;

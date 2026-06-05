@@ -43,8 +43,8 @@
   .borne.signale .dot{background:#f472b6}
   .borne.signale .dot-ring{background:#f472b6;animation:pulse-ring 0.5s ease-out infinite}
   .borne.signale .borne-status{color:#f9a8d4}
-  .btn-charge-terminee{width:100%;margin-top:8px;padding:8px;border-radius:10px;border:1px solid #db2777;background:#1a0010;color:#f472b6;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
-  .btn-charge-terminee:active{background:#2d0020}
+  .btn-charge-terminee{padding:4px 10px;border-radius:8px;border:1.5px solid #db2777;background:#2d0020;color:#f9a8d4;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+  .btn-charge-terminee:active{background:#3d0030}
   .civisme-rose{margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:#1a0010;border:1px solid #db277750;text-align:center}
   .civisme-rose-text{font-size:11px;color:#f9a8d4;font-weight:600;font-style:italic}
   @keyframes resa-bg{0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}}
@@ -204,7 +204,7 @@ function render(){
     let html=`<div class="borne-top"><div>
       <div class="borne-id">${id}</div>
       <div class="borne-status">${alarme?"Charge terminée":signale?"Charge terminée !":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
-    </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
+    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">${b.status==="occupe"&&!alarme?`<button class="btn-charge-terminee" data-id="${id}">⚡ Charge terminée</button>`:""}<div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div></div>`;
     if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
     if(b.status==="hors-service"){html+=`<div style="text-align:center;padding:6px 0"><div class="hs-stripes"></div><div class="hs-icon">🔧</div><div class="hs-label">Hors service</div></div>`;}
     if(alarme){
@@ -220,7 +220,6 @@ function render(){
     } else if(b.status==="occupe"){
       html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
-      html+=`<button class="btn-charge-terminee" data-id="${id}">⚠ Charge terminée</button>`;
     }
     if(b.status!=="hors-service"&&!reservee&&!signale){
       html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;

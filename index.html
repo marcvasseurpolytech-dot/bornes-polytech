@@ -196,13 +196,13 @@ function render(){
     if(alarme){
       html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
       html+=`<div class="civisme-box"><div class="civisme-text">On partage les bornes — libérez votre place 🙏</div></div>`;
+      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
     } else if(reservee){
       const urgent=resaSec!==null&&resaSec<120;
       html+=`<div class="resa-box"><div class="resa-name">👤 ${b.resa||"?"}</div><div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div></div>`;
     } else if(b.status==="occupe"){
       html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
-      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
     }
     if(b.status!=="hors-service"&&!reservee){
       html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;

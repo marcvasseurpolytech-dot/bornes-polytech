@@ -201,10 +201,11 @@ function render(){
     const cardClass=alarme?"alarme":signale?"signale":reservee?"reservee":b.status;
     const div=document.createElement("div");
     div.className=`borne ${cardClass}${selectedCharge===id?" selected":""}`;
+    const btnCThtml = (b.status==="occupe"&&!alarme&&!signale) ? `<button class="btn-charge-terminee" data-id="${id}">⚡ Charge terminée</button>` : "";
     let html=`<div class="borne-top"><div>
       <div class="borne-id">${id}</div>
       <div class="borne-status">${alarme?"Charge terminée":signale?"Charge terminée !":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
-    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">${b.status==="occupe"&&!alarme?`<button class="btn-charge-terminee" data-id="${id}">⚡ Charge terminée</button>`:""}<div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div></div>`;
+    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">${btnCThtml}<div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div></div>`;
     if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
     if(b.status==="hors-service"){html+=`<div style="text-align:center;padding:6px 0"><div class="hs-stripes"></div><div class="hs-icon">🔧</div><div class="hs-label">Hors service</div></div>`;}
     if(alarme){

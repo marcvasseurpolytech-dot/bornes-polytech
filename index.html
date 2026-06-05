@@ -34,6 +34,19 @@
   .hs-label{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:1px;animation:hs-pulse 2s ease-in-out infinite}
   @keyframes alarm-bg{0%,100%{background:#1a0000;border-color:#ef4444;box-shadow:0 0 28px #ef444440}50%{background:#2a0000;border-color:#fca5a5;box-shadow:0 0 48px #ef444470}}
   .borne.alarme{animation:alarm-bg 1s ease-in-out infinite;cursor:pointer}
+  @keyframes signale-bg{
+    0%,100%{background:#1a0010;border-color:#db2777;box-shadow:0 0 24px #db277740}
+    33%{background:#2d0020;border-color:#f472b6;box-shadow:0 0 48px #f472b670}
+    66%{background:#1a0010;border-color:#ec4899;box-shadow:0 0 36px #ec489950}
+  }
+  .borne.signale{animation:signale-bg 0.8s ease-in-out infinite;cursor:pointer}
+  .borne.signale .dot{background:#f472b6}
+  .borne.signale .dot-ring{background:#f472b6;animation:pulse-ring 0.5s ease-out infinite}
+  .borne.signale .borne-status{color:#f9a8d4}
+  .btn-charge-terminee{width:100%;margin-top:8px;padding:8px;border-radius:10px;border:1px solid #db2777;background:#1a0010;color:#f472b6;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-charge-terminee:active{background:#2d0020}
+  .civisme-rose{margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:#1a0010;border:1px solid #db277750;text-align:center}
+  .civisme-rose-text{font-size:11px;color:#f9a8d4;font-weight:600;font-style:italic}
   @keyframes resa-bg{0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}}
   .borne.reservee{animation:resa-bg 2s ease-in-out infinite;cursor:pointer}
   @keyframes flash{0%,100%{opacity:1}50%{opacity:0.25}}
@@ -155,6 +168,7 @@ function fmtH(iso){if(!iso)return"";return new Date(iso).toLocaleTimeString("fr-
 function fmtMin(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
 function fmtSec(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/1000);}
 function isAlarme(b){return b.status==="occupe"&&b.fin&&new Date(b.fin)<Date.now();}
+function isSignale(b){return b.status==="signale";}
 function isResaExpired(b){return b.status==="reservee"&&b.resaFin&&new Date(b.resaFin)<Date.now();}
 function progress(fin){if(!fin)return 0;const t=4*3600*1000,e=t-(new Date(fin)-Date.now());return Math.min(100,Math.max(0,Math.round(e/t*100)));}
 
@@ -177,19 +191,19 @@ function render(){
   let libres=0,occupees=0,alarmes=0,resas=0;
   BORNES.forEach(id=>{
     const b=state[id];
-    const alarme=isAlarme(b),reservee=b.status==="reservee";
+    const alarme=isAlarme(b),reservee=b.status==="reservee",signale=isSignale(b);
     if(b.status==="libre")libres++;
     else if(b.status==="occupe"&&!alarme)occupees++;
     else if(alarme)alarmes++;
     else if(reservee)resas++;
     const min=fmtMin(b.fin),pct=progress(b.fin);
     const resaSec=fmtSec(b.resaFin),resaMin=fmtMin(b.resaFin);
-    const cardClass=alarme?"alarme":reservee?"reservee":b.status;
+    const cardClass=alarme?"alarme":signale?"signale":reservee?"reservee":b.status;
     const div=document.createElement("div");
     div.className=`borne ${cardClass}${selectedCharge===id?" selected":""}`;
     let html=`<div class="borne-top"><div>
       <div class="borne-id">${id}</div>
-      <div class="borne-status">${alarme?"Charge terminée":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
+      <div class="borne-status">${alarme?"Charge terminée":signale?"Charge terminée !":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
     </div><div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div>`;
     if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
     if(b.status==="hors-service"){html+=`<div style="text-align:center;padding:6px 0"><div class="hs-stripes"></div><div class="hs-icon">🔧</div><div class="hs-label">Hors service</div></div>`;}
@@ -197,14 +211,18 @@ function render(){
       html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
       html+=`<div class="civisme-box"><div class="civisme-text">On partage les bornes — libérez votre place 🙏</div></div>`;
       html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
+    } else if(signale){
+      html+=`<div class="civisme-rose"><div class="civisme-rose-text">Merci de libérer la borne — vos collègues attendent !</div></div>`;
+      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
     } else if(reservee){
       const urgent=resaSec!==null&&resaSec<120;
       html+=`<div class="resa-box"><div class="resa-name">👤 ${b.resa||"?"}</div><div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div></div>`;
     } else if(b.status==="occupe"){
       html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
+      html+=`<button class="btn-charge-terminee" data-id="${id}">⚠ Charge terminée</button>`;
     }
-    if(b.status!=="hors-service"&&!reservee){
+    if(b.status!=="hors-service"&&!reservee&&!signale){
       html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;
     }
     if(b.status==="libre"){
@@ -228,6 +246,8 @@ function render(){
     if(btnSA)btnSA.addEventListener("click",e=>{e.stopPropagation();marquerSansAppli(id);});
     const btnD=div.querySelector(".btn-debrancher");
     if(btnD)btnD.addEventListener("click",e=>{e.stopPropagation();saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});});
+    const btnCT=div.querySelector(".btn-charge-terminee");
+    if(btnCT)btnCT.addEventListener("click",e=>{e.stopPropagation();saveState({...state,[id]:{status:"signale",fin:null,resa:null,resaFin:null}});});
     grid.appendChild(div);
   });
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
@@ -247,7 +267,7 @@ function openResa(id){
 
 function handleBorne(id){
   const b=state[id];
-  if(b.status==="occupe"||isAlarme(b)){
+  if(b.status==="occupe"||isAlarme(b)||isSignale(b)){
     saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});
   } else if(b.status==="libre"||b.status==="reservee"){
     selectedCharge=id;

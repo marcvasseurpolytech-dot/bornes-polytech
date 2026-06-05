@@ -23,6 +23,8 @@
   .borne.selected{outline:2px solid #60a5fa;outline-offset:2px}
   .borne.libre{background:#0a1a0f;border:1.5px solid #16a34a}
   .borne.occupe{background:#1a0e00;border:1.5px solid #c2410c}
+  @keyframes occupe-flash{0%,100%{background:#1a0e00;border-color:#c2410c;box-shadow:0 0 12px #f9731620}50%{background:#2a1500;border-color:#fb923c;box-shadow:0 0 28px #fb923c50}}
+  .borne.occupe{animation:occupe-flash 2s ease-in-out infinite}
   .borne.hors-service{background:#111;border:1.5px solid #334155;cursor:default;opacity:0.85}
   @keyframes stripes{0%{background-position:0 0}100%{background-position:28px 0}}
   .hs-stripes{margin:10px 0 4px;height:6px;border-radius:4px;background:repeating-linear-gradient(90deg,#1e293b 0px,#1e293b 10px,#0f172a 10px,#0f172a 18px);background-size:28px 100%;animation:stripes 1.2s linear infinite;opacity:0.7}
@@ -61,6 +63,10 @@
   .btn-reserver:active{background:#312e81}
   .btn-sans-appli{width:100%;margin-top:6px;padding:7px;border-radius:10px;border:1px solid #475569;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
   .btn-sans-appli:active{background:#334155}
+  .btn-debrancher{width:100%;margin-top:6px;padding:7px;border-radius:10px;border:1px solid #f97316;background:#1a0e00;color:#fb923c;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
+  .btn-debrancher:active{background:#2a1500}
+  .civisme-box{margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:#1a1200;border:1px solid #854d0e;text-align:center}
+  .civisme-text{font-size:11px;color:#fbbf24;font-weight:600;font-style:italic}
   @keyframes zap{0%,100%{opacity:0.15;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1.1);filter:drop-shadow(0 0 5px #fb923c)}}
   .lightning-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0 4px;height:28px}
   .lightning{font-size:22px;animation:zap 0.9s ease-in-out infinite;display:inline-block}
@@ -189,12 +195,14 @@ function render(){
     if(b.status==="hors-service"){html+=`<div style="text-align:center;padding:6px 0"><div class="hs-stripes"></div><div class="hs-icon">🔧</div><div class="hs-label">Hors service</div></div>`;}
     if(alarme){
       html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
+      html+=`<div class="civisme-box"><div class="civisme-text">On partage les bornes — libérez votre place 🙏</div></div>`;
     } else if(reservee){
       const urgent=resaSec!==null&&resaSec<120;
       html+=`<div class="resa-box"><div class="resa-name">👤 ${b.resa||"?"}</div><div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div></div>`;
     } else if(b.status==="occupe"){
       html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
       if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
+      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
     }
     if(b.status!=="hors-service"&&!reservee){
       html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;
@@ -218,6 +226,8 @@ function render(){
     if(btnR)btnR.addEventListener("click",e=>{e.stopPropagation();openResa(id);});
     const btnSA=div.querySelector(".btn-sans-appli");
     if(btnSA)btnSA.addEventListener("click",e=>{e.stopPropagation();marquerSansAppli(id);});
+    const btnD=div.querySelector(".btn-debrancher");
+    if(btnD)btnD.addEventListener("click",e=>{e.stopPropagation();saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});});
     grid.appendChild(div);
   });
   document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
@@ -281,8 +291,7 @@ document.getElementById("btn-confirm-resa").addEventListener("click",async()=>{
 document.getElementById("btn-cancel-resa").addEventListener("click",()=>{selectedResa=null;document.getElementById("panel-resa").classList.remove("visible");render();});
 
 function marquerSansAppli(id){
-  const fin=new Date(Date.now()+4*3600*1000).toISOString();
-  saveState({...state,[id]:{status:"occupe",fin,resa:null,resaFin:null}});
+  saveState({...state,[id]:{status:"occupe",fin:null,resa:null,resaFin:null}});
 }
 
 async function saveState(next){

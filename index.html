@@ -106,6 +106,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .resa .who{font-weight:600; font-size:1.05rem; overflow-wrap:anywhere}
 .resa .timer{font-family:var(--mono); font-size:.85rem; color:var(--resa)}
 .resa .timer.urgent{color:var(--alarm)}
+.wait{margin:0; padding:6px 10px; border-radius:10px; font-size:.88rem; color:var(--resa); background:color-mix(in srgb, var(--resa) 14%, transparent); border:1px solid color-mix(in srgb, var(--resa) 45%, transparent); overflow-wrap:anywhere}
 .msg{margin:0; padding:8px 10px; border-radius:10px; font-size:.9rem; background:color-mix(in srgb, var(--c) 14%, transparent); border:1px solid color-mix(in srgb, var(--c) 45%, transparent)}
 .msg b{display:block; font-family:var(--serif); font-size:1.1rem; color:var(--c)}
 .hs-art{display:flex; align-items:center; gap:10px; color:var(--muted)}
@@ -306,6 +307,8 @@ const BADGE={libre:"Disponible",occupe:"En charge",reservee:"J'aimerais charger"
 
 function cardHTML(id,b){
   const kind=kindOf(b);
+  const waiting=!!(b.resa&&b.resaFin&&new Date(b.resaFin)>Date.now());
+  const waitHTML=waiting?'<p class="wait"><b>'+esc(b.resa)+'</b> attend cette borne</p>':"";
   let body="",acts="";
   if(kind==="libre"){
     body='<p class="lead">Prête à brancher</p>';
@@ -324,11 +327,13 @@ function cardHTML(id,b){
     }else{
       body='<p class="lead">Heure de fin non indiquée</p>';
     }
+    body+=waitHTML;
     acts='<button class="btn ghost" data-act="done" data-id="'+id+'">Charge terminée</button>'+
          '<button class="btn" data-act="free" data-id="'+id+'">Libérer la borne</button>';
   }else if(kind==="alarme"){
     const late=Math.max(0,-minutesTo(b.fin));
     body='<p class="msg"><b>Débranchez SVP</b>Fin dépassée depuis '+fmtDur(late)+'. On partage les bornes, libérez la place.</p>';
+    body+=waitHTML;
     acts='<button class="btn warn" data-act="free" data-id="'+id+'">Débrancher SVP</button>';
   }else if(kind==="signale"){
     body='<p class="msg"><b>Charge terminée</b>Dans un souci de partage, pensez à vous débrancher.</p>';

@@ -1,341 +1,583 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bornes Polytech Lille</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bornes de recharge, Polytech Lille</title>
+<meta name="theme-color" content="#0b1b33">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Playfair+Display:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{min-height:100vh;background:#000;font-family:'Inter',sans-serif;color:#f1f5f9;display:flex;flex-direction:column;align-items:center;padding:32px 16px 56px}
-  .header{text-align:center;margin-bottom:28px}
-  .label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#475569;margin-bottom:8px}
-  h1{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.5px}
-  .stats{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:center;font-size:13px}
-  .stat-libre{color:#4ade80;font-weight:700}
-  .stat-occupe{color:#fb923c;font-weight:700}
-  .stat-alarm{color:#f87171;font-weight:700}
-  .stat-resa{color:#a5b4fc;font-weight:700}
-  .conn{margin-top:8px;font-size:11px}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;max-width:400px}
-  .borne{border-radius:18px;padding:16px;cursor:pointer;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:transform 0.12s}
-  .borne:active{transform:scale(0.97)}
-  .borne.selected{outline:2px solid #60a5fa;outline-offset:2px}
-  .borne.libre{background:#0a1a0f;border:1.5px solid #16a34a}
-  .borne.occupe{background:#1a0e00;border:1.5px solid #c2410c}
-  @keyframes occupe-flash{0%,100%{background:#1a0e00;border-color:#c2410c;box-shadow:0 0 12px #f9731620}50%{background:#2a1500;border-color:#fb923c;box-shadow:0 0 28px #fb923c50}}
-  .borne.occupe{animation:occupe-flash 2s ease-in-out infinite}
-  .borne.hors-service{background:#111;border:1.5px solid #334155;cursor:default;opacity:0.85}
-  @keyframes stripes-move{0%{background-position:0 0}100%{background-position:40px 0}}
-  .hs-stripes{margin:10px 0 6px;height:10px;border-radius:4px;
-    background:repeating-linear-gradient(90deg,#fbbf24 0px,#fbbf24 14px,#1a1a1a 14px,#1a1a1a 26px);
-    background-size:40px 100%;animation:stripes-move 0.8s linear infinite;
-    box-shadow:0 0 8px #fbbf2440}
-  @keyframes cone-bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
-  .hs-cone{display:flex;justify-content:center;margin:4px 0 2px;animation:cone-bounce 1.6s ease-in-out infinite}
-  @keyframes hs-pulse{0%,100%{opacity:0.5}50%{opacity:0.9}}
-  .hs-label{font-size:11px;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:1px;animation:hs-pulse 2s ease-in-out infinite;text-shadow:0 0 8px #fbbf2440}
-  @keyframes alarm-bg{0%,100%{background:#1a0000;border-color:#ef4444;box-shadow:0 0 28px #ef444440}50%{background:#2a0000;border-color:#fca5a5;box-shadow:0 0 48px #ef444470}}
-  .borne.alarme{animation:alarm-bg 1s ease-in-out infinite;cursor:pointer}
-  @keyframes signale-bg{
-    0%,100%{background:#1a0010;border-color:#db2777;box-shadow:0 0 24px #db277740}
-    33%{background:#2d0020;border-color:#f472b6;box-shadow:0 0 48px #f472b670}
-    66%{background:#1a0010;border-color:#ec4899;box-shadow:0 0 36px #ec489950}
+:root{
+  --bg:#0b1b33; --card:#10264a; --card2:#163259; --line:#25457a; --ink:#f5efe0; --muted:#9fb1cf;
+  --gold:#d9b15a; --on-gold:#0b1b33;
+  --free:#7ad9a8; --charging:#74b6ff; --resa:#b3aeff; --alarm:#ff9273; --signal:#f4a3c8; --hs:#8492ad;
+  --serif:"Playfair Display", Georgia, serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#f5efe0; --card:#fffaf0; --card2:#f0e7d0; --line:#d8ccae; --ink:#0b1b33; --muted:#5c6b85;
+    --gold:#9a7212; --on-gold:#fffaf0;
+    --free:#1c7c52; --charging:#1b5fc4; --resa:#5a4fd0; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
+    color-scheme:light;
   }
-  .borne.signale{animation:signale-bg 0.8s ease-in-out infinite;cursor:pointer}
-  .borne.signale .dot{background:#f472b6}
-  .borne.signale .dot-ring{background:#f472b6;animation:pulse-ring 0.5s ease-out infinite}
-  .borne.signale .borne-status{color:#f9a8d4}
-  .btn-charge-terminee{padding:4px 10px;border-radius:8px;border:1.5px solid #db2777;background:#2d0020;color:#f9a8d4;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
-  .btn-charge-terminee:active{background:#3d0030}
-  .civisme-rose{margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:#1a0010;border:1px solid #db277750;text-align:center}
-  .civisme-rose-text{font-size:11px;color:#f9a8d4;font-weight:600;font-style:italic}
-  @keyframes resa-bg{0%,100%{background:#0c0a1f;border-color:#4f46e5;box-shadow:0 0 20px #4f46e530}50%{background:#131040;border-color:#a5b4fc;box-shadow:0 0 36px #818cf850}}
-  .borne.reservee{animation:resa-bg 2s ease-in-out infinite;cursor:pointer}
-  @keyframes flash{0%,100%{opacity:1}50%{opacity:0.25}}
-  .borne.flash{animation:flash 0.35s ease}
-  .dot-wrap{position:relative;width:12px;height:12px;flex-shrink:0;margin-top:3px}
-  .dot,.dot-ring{width:12px;height:12px;border-radius:50%;position:absolute;top:0;left:0}
-  .libre .dot{background:#4ade80}.occupe .dot{background:#fb923c}.alarme .dot{background:#f87171}.reservee .dot{background:#a5b4fc}.hors-service .dot{background:#475569}
-  @keyframes pulse-ring{0%{transform:scale(1);opacity:0.7}100%{transform:scale(2.6);opacity:0}}
-  .libre .dot-ring{background:#4ade80;animation:pulse-ring 2s ease-out infinite}
-  .occupe .dot-ring{background:#fb923c;animation:pulse-ring 1.2s ease-out infinite}
-  .alarme .dot-ring{background:#f87171;animation:pulse-ring 0.6s ease-out infinite}
-  .reservee .dot-ring{background:#a5b4fc;animation:pulse-ring 1.5s ease-out infinite}
-  .borne-top{display:flex;justify-content:space-between;align-items:flex-start}
-  .borne-id{font-size:24px;font-weight:800;color:#fff;line-height:1}
-  .borne-status{font-size:12px;margin-top:5px;font-weight:600}
-  .libre .borne-status{color:#86efac}.occupe .borne-status{color:#fdba74}.alarme .borne-status{color:#fca5a5}.reservee .borne-status{color:#c7d2fe}.hors-service .borne-status{color:#64748b}
-  .alarm-banner{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 4px;padding:8px 10px;border-radius:10px;background:#450a0a;border:1px solid #ef444460}
-  @keyframes shake{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
-  .alarm-icon{font-size:16px;animation:shake 0.5s ease-in-out infinite;display:inline-block}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.5}}
-  .alarm-text{font-size:12px;font-weight:800;color:#fca5a5;text-transform:uppercase;letter-spacing:0.8px;animation:blink 0.9s ease-in-out infinite}
-  .resa-box{margin:10px 0 4px;padding:9px 11px;border-radius:10px;background:#1e1b4b;border:1px solid #4f46e5}
-  .resa-name{font-size:15px;font-weight:800;color:#e0e7ff}
-  .resa-timer{font-size:12px;color:#a5b4fc;margin-top:4px;font-weight:600}
-  .resa-timer.urgent{color:#f87171}
-  .btn-reserver{width:100%;margin-top:10px;padding:8px;border-radius:10px;border:1px solid #4338ca;background:#1e1b4b;color:#c7d2fe;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
-  .btn-reserver:active{background:#312e81}
-  .btn-sans-appli{width:100%;margin-top:6px;padding:7px;border-radius:10px;border:1px solid #475569;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
-  .btn-sans-appli:active{background:#334155}
-  .btn-debrancher{width:100%;margin-top:6px;padding:7px;border-radius:10px;border:1px solid #f97316;background:#1a0e00;color:#fb923c;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px}
-  .btn-debrancher:active{background:#2a1500}
-  .civisme-box{margin:8px 0 4px;padding:8px 10px;border-radius:10px;background:#1a1200;border:1px solid #854d0e;text-align:center}
-  .civisme-text{font-size:11px;color:#fbbf24;font-weight:600;font-style:italic}
-  @keyframes zap{0%,100%{opacity:0.15;transform:scaleY(0.8)}50%{opacity:1;transform:scaleY(1.1);filter:drop-shadow(0 0 5px #fb923c)}}
-  .lightning-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0 4px;height:28px}
-  .lightning{font-size:22px;animation:zap 0.9s ease-in-out infinite;display:inline-block}
-  .lightning:nth-child(2){animation-delay:0.3s;font-size:17px}
-  .lightning:nth-child(3){animation-delay:0.6s;font-size:13px}
-  .progress-wrap{margin-top:8px;background:#ffffff15;border-radius:6px;height:5px;overflow:hidden}
-  .progress-bar{height:100%;border-radius:6px;background:linear-gradient(90deg,#f97316,#fbbf24);box-shadow:0 0 6px #f9731660}
-  .fin-box{margin-top:8px}
-  .fin-label{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px}
-  .fin-heure{font-size:17px;font-weight:800;color:#fdba74;margin-top:3px;line-height:1}
-  .fin-min{font-size:11px;color:#78716c;margin-left:5px;font-weight:500}
-  .borne-actions{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-  .hs-btn{font-size:9px;cursor:pointer;text-decoration:underline;color:#334155;background:none;border:none;font-family:inherit;padding:0}
-  .borne.hors-service .hs-btn{color:#4ade8055}
-  .tap-hint{font-size:9px;font-weight:600}
-  .libre .tap-hint{color:#4ade8040}.occupe .tap-hint{color:#fb923c50}.alarme .tap-hint{color:#f8717160}.reservee .tap-hint{color:#a5b4fc60}
-  @keyframes sparkle{0%,100%{opacity:0;transform:scale(0.4) rotate(0deg)}50%{opacity:0.8;transform:scale(1) rotate(180deg)}}
-  .sparkle{position:absolute;font-size:8px;animation:sparkle 3s ease-in-out infinite;pointer-events:none;color:#4ade80}
-  .sparkle:nth-child(1){top:8px;right:18px;animation-delay:0s}
-  .sparkle:nth-child(2){top:22px;right:10px;animation-delay:1s;font-size:6px}
-  .sparkle:nth-child(3){top:14px;right:28px;animation-delay:2s;font-size:5px}
-  .panel{margin-top:20px;background:#0f172a;border:1.5px solid #1e3a5f;border-radius:20px;padding:22px;width:100%;max-width:400px;display:none;box-shadow:0 8px 40px #000a}
-  .panel.visible{display:block}
-  .panel-title{font-size:14px;color:#93c5fd;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-  input[type=time]{width:100%;padding:14px;border-radius:12px;border:1.5px solid #1e3a5f;background:#020617;color:#fff;font-size:28px;text-align:center;outline:none;font-weight:800;font-family:inherit;letter-spacing:3px}
-  input[type=text]{width:100%;padding:14px;border-radius:12px;border:1.5px solid #312e81;background:#020617;color:#e0e7ff;font-size:20px;text-align:center;outline:none;font-weight:700;font-family:inherit}
-  input[type=text]::placeholder{color:#334155;font-weight:400}
-  .btn-row{display:flex;gap:10px;margin-top:14px}
-  .btn-confirm{flex:1;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity 0.15s}
-  .btn-confirm:disabled{opacity:0.4}
-  .btn-confirm.blue{background:linear-gradient(135deg,#4338ca,#818cf8)}
-  .btn-cancel{flex:1;padding:14px;border-radius:12px;border:1.5px solid #1e293b;background:transparent;color:#64748b;font-size:14px;cursor:pointer;font-family:inherit}
-  .footer{margin-top:18px;font-size:10px;color:#1e293b;text-align:center;line-height:2}
-  .btn-reset{margin-top:24px;padding:11px 28px;border-radius:50px;border:1px solid #334155;background:transparent;color:#475569;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
-  .btn-reset:active{background:#1e293b;color:#94a3b8}
+}
+:root[data-theme="light"]{
+  --bg:#f5efe0; --card:#fffaf0; --card2:#f0e7d0; --line:#d8ccae; --ink:#0b1b33; --muted:#5c6b85;
+  --gold:#9a7212; --on-gold:#fffaf0;
+  --free:#1c7c52; --charging:#1b5fc4; --resa:#5a4fd0; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.4;
+  padding:max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+}
+.wrap{max-width:980px; margin:0 auto}
+button,input{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px}
+svg.i{width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none}
+
+/* En-tete */
+.top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px}
+.place{margin:0; color:var(--muted); font-size:.9rem}
+h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; line-height:1.12; color:var(--ink)}
+.sub{margin:4px 0 0; color:var(--muted); font-size:.95rem}
+.clock{display:none; font-family:var(--mono); font-weight:700; font-size:2.6rem; color:var(--gold)}
+.tools{display:flex; gap:6px; flex:none}
+.ico{width:42px; height:42px; display:grid; place-items:center; border:1px solid var(--line); background:var(--card); border-radius:10px}
+.ico[aria-pressed="true"]{border-color:var(--gold); color:var(--gold)}
+
+/* Resume */
+.summary{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:14px}
+.big{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.big b{font-family:var(--serif); font-size:3rem; line-height:1; color:var(--free)}
+.big b.none{color:var(--alarm)}
+.big span{font-size:1.05rem}
+.chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); font-size:.88rem; background:var(--card2)}
+.chip i{width:8px; height:8px; border-radius:50%; background:var(--c)}
+.chip.c-charging{--c:var(--charging)} .chip.c-alarm{--c:var(--alarm)} .chip.c-resa{--c:var(--resa)} .chip.c-hs{--c:var(--hs)}
+.next{margin:10px 0 0; color:var(--muted); font-size:.95rem}
+.next b{font-family:var(--mono); font-weight:700; color:var(--ink)}
+.conn{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.85rem; color:var(--muted)}
+.conn i{width:9px; height:9px; border-radius:50%; background:var(--hs)}
+.conn.ok i{background:var(--free)}
+.conn.err i{background:var(--alarm)}
+
+/* Cartes */
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+.borne{
+  --c:var(--hs);
+  display:flex; flex-direction:column; gap:10px;
+  background:color-mix(in srgb, var(--c) 7%, var(--card));
+  border:1px solid var(--line); border-top:4px solid var(--c); border-radius:14px; padding:12px;
+  min-width:0;
+}
+.borne[data-status="libre"]{--c:var(--free)}
+.borne[data-status="occupe"]{--c:var(--charging)}
+.borne[data-status="reservee"]{--c:var(--resa)}
+.borne[data-status="alarme"]{--c:var(--alarm); animation:alarm 2.2s ease-in-out infinite}
+.borne[data-status="signale"]{--c:var(--signal)}
+.borne[data-status="hors-service"]{--c:var(--hs)}
+.borne[data-tap="1"]{cursor:pointer}
+@keyframes alarm{50%{box-shadow:0 0 0 3px color-mix(in srgb, var(--alarm) 45%, transparent)}}
+.head{display:flex; align-items:center; justify-content:space-between; gap:6px}
+.bid{font-family:var(--serif); font-weight:700; font-size:1.6rem; line-height:1}
+.badge{display:inline-flex; align-items:center; gap:6px; color:var(--c); font-size:.86rem; font-weight:600; text-align:right}
+.badge i{width:9px; height:9px; border-radius:50%; background:var(--c); flex:none}
+.borne[data-status="occupe"] .badge i{animation:blink 1.8s ease-in-out infinite}
+@keyframes blink{50%{opacity:.3}}
+.lead{margin:0; color:var(--muted); font-size:.95rem}
+.fin{display:flex; flex-direction:column; gap:2px}
+.fin .k{color:var(--muted); font-size:.85rem}
+.fin .t{font-family:var(--mono); font-weight:700; font-size:1.7rem; line-height:1.1}
+.fin .rest{color:var(--charging); font-size:.9rem}
+.bar{height:6px; border-radius:99px; background:var(--card2); overflow:hidden}
+.bar i{display:block; height:100%; background:var(--c); border-radius:99px; transition:width .6s ease}
+.resa{display:flex; flex-direction:column; gap:2px}
+.resa .who{font-weight:600; font-size:1.05rem; overflow-wrap:anywhere}
+.resa .timer{font-family:var(--mono); font-size:.85rem; color:var(--resa)}
+.resa .timer.urgent{color:var(--alarm)}
+.msg{margin:0; padding:8px 10px; border-radius:10px; font-size:.9rem; background:color-mix(in srgb, var(--c) 14%, transparent); border:1px solid color-mix(in srgb, var(--c) 45%, transparent)}
+.msg b{display:block; font-family:var(--serif); font-size:1.1rem; color:var(--c)}
+.hs-art{display:flex; align-items:center; gap:10px; color:var(--muted)}
+.hs-art svg{width:40px; height:44px; flex:none}
+.acts{display:flex; flex-direction:column; gap:6px; margin-top:auto}
+.btn{
+  min-height:44px; padding:8px 12px; border-radius:10px; border:1px solid var(--gold);
+  background:var(--gold); color:var(--on-gold); font-weight:600; text-align:center;
+}
+.btn.ghost{background:transparent; color:var(--ink); border-color:var(--line)}
+.btn.warn{background:var(--alarm); border-color:var(--alarm); color:#0b1b33}
+.btn:disabled{opacity:.6; cursor:wait}
+.mini{display:flex; gap:6px}
+.mini button{flex:1; min-height:38px; font-size:.85rem; border:1px solid var(--line); background:transparent; border-radius:9px; padding:4px 6px; color:var(--muted)}
+.mini button:hover{color:var(--ink); border-color:var(--gold)}
+
+.foot{margin-top:18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--muted); font-size:.85rem}
+.reset{border:1px solid var(--line); background:transparent; border-radius:10px; padding:10px 14px; color:var(--muted)}
+.reset:hover{color:var(--ink); border-color:var(--gold)}
+
+/* Panneaux */
+.backdrop{position:fixed; inset:0; background:rgba(3,10,22,.62); opacity:0; pointer-events:none; transition:opacity .2s; z-index:20}
+.backdrop.on{opacity:1; pointer-events:auto}
+.sheet{
+  position:fixed; left:0; right:0; bottom:0; z-index:21; margin:0 auto; max-width:520px;
+  background:var(--card); border:1px solid var(--line); border-bottom:0; border-radius:18px 18px 0 0;
+  padding:18px 16px max(20px,env(safe-area-inset-bottom)); transform:translateY(105%); transition:transform .25s ease; visibility:hidden;
+}
+.sheet.visible{transform:none; visibility:visible}
+.sheet h2{margin:0 0 12px; font-family:var(--serif); font-size:1.3rem}
+.quick{display:flex; gap:8px; margin-bottom:10px}
+.quick button{flex:1; min-height:42px; border:1px solid var(--line); background:var(--card2); border-radius:10px}
+.quick button:hover{border-color:var(--gold)}
+.sheet input{
+  width:100%; min-height:48px; padding:8px 12px; border-radius:10px; border:1px solid var(--line);
+  background:var(--bg); font-size:1.2rem;
+}
+.sheet input[type="time"]{font-family:var(--mono)}
+.row{display:flex; gap:8px; margin-top:12px}
+.row .btn{flex:1}
+
+#toast{
+  position:fixed; left:50%; bottom:max(22px,env(safe-area-inset-bottom)); transform:translate(-50%,30px); z-index:30;
+  background:var(--gold); color:var(--on-gold); padding:12px 18px; border-radius:12px; opacity:0; pointer-events:none;
+  transition:opacity .25s, transform .25s; max-width:90vw; text-align:center; font-weight:600;
+}
+#toast.show{opacity:1; transform:translate(-50%,0)}
+
+@media (min-width:720px){
+  .grid{grid-template-columns:repeat(3,1fr); gap:14px}
+  h1{font-size:2.1rem}
+}
+
+/* Mode affichage */
+body.display .tools, body.display .foot, body.display .mini, body.display .acts .btn{display:none}
+body.display .clock{display:block}
+body.display .grid{grid-template-columns:repeat(3,1fr); gap:18px}
+body.display h1{font-size:2.8rem}
+body.display .big b{font-size:5rem}
+body.display .big span{font-size:1.5rem}
+body.display .bid{font-size:2.6rem}
+body.display .badge{font-size:1.15rem}
+body.display .fin .t{font-size:2.6rem}
+body.display .lead, body.display .msg, body.display .resa .who{font-size:1.2rem}
+body.display .next{font-size:1.2rem}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+}
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="label">Polytech Lille</div>
-  <h1>⚡ Bornes de recharge</h1>
-  <div class="stats">
-    <span class="stat-libre" id="stat-libres">● 6 libres</span>
-    <span class="stat-occupe" id="stat-occupees" style="display:none">● 0 en charge</span>
-    <span class="stat-alarm" id="stat-alarmes" style="display:none">● 0 ⚠</span>
-    <span class="stat-resa" id="stat-resas" style="display:none">● 0 réservée</span>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="place">Polytech Lille</p>
+      <h1>Bornes de recharge</h1>
+      <p class="sub">6 bornes de 11 kW sur le parking</p>
+    </div>
+    <div class="clock" id="clock" aria-hidden="true"></div>
+    <div class="tools">
+      <button class="ico" id="btn-bell" aria-pressed="false" aria-label="Me prévenir quand une borne se libère" title="Me prévenir quand une borne se libère">
+        <svg class="i" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      </button>
+      <button class="ico" id="btn-theme" aria-label="Changer de thème" title="Changer de thème">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="ico" id="btn-display" aria-label="Mode affichage plein écran" title="Mode affichage plein écran">
+        <svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="summary" aria-live="polite">
+    <div class="big"><b id="big-n">6</b><span id="big-l">bornes libres sur 6</span></div>
+    <div class="chips" id="chips"></div>
+    <p class="next" id="next" hidden></p>
+    <div class="conn" id="conn-status"><i></i><span>Connexion en cours</span></div>
+  </section>
+
+  <main class="grid" id="grid"></main>
+
+  <div class="foot">
+    <span>Synchronisation automatique toutes les 15 secondes</span>
+    <button class="reset" id="btn-reset">Remettre toutes les bornes en disponible</button>
   </div>
-  <div class="conn" id="conn-status" style="color:#334155">Connexion…</div>
 </div>
 
-<div class="grid" id="grid"></div>
+<div class="backdrop" id="backdrop"></div>
 
-<div class="panel" id="panel-charge">
-  <div class="panel-title">🔌 <span id="panel-charge-title">Borne — Heure de fin</span></div>
-  <input type="time" id="time-input"/>
-  <div class="btn-row">
-    <button class="btn-confirm" id="btn-confirm">⚡ Confirmer</button>
-    <button class="btn-cancel" id="btn-cancel-charge">Annuler</button>
+<section class="sheet" id="panel-charge" role="dialog" aria-modal="true" aria-labelledby="panel-charge-title">
+  <h2 id="panel-charge-title">Borne, heure de fin</h2>
+  <div class="quick" role="group" aria-label="Durée rapide">
+    <button data-add="1">+1 h</button><button data-add="2">+2 h</button><button data-add="3">+3 h</button><button data-add="4">+4 h</button>
   </div>
-</div>
-
-<div class="panel" id="panel-resa">
-  <div class="panel-title">🔵 <span id="panel-resa-title">Réserver la borne</span></div>
-  <input type="text" id="prenom-input" placeholder="Votre prénom…" maxlength="20"/>
-  <div class="btn-row">
-    <button class="btn-confirm blue" id="btn-confirm-resa">Réserver 10 min</button>
-    <button class="btn-cancel" id="btn-cancel-resa">Annuler</button>
+  <input type="time" id="time-input" aria-label="Heure de fin de charge">
+  <div class="row">
+    <button class="btn" id="btn-confirm">Confirmer</button>
+    <button class="btn ghost" id="btn-cancel-charge">Annuler</button>
   </div>
-</div>
+</section>
 
-<div class="footer">sync auto 15s</div>
-<button class="btn-reset" id="btn-reset">Remettre toutes les bornes en disponible</button>
+<section class="sheet" id="panel-resa" role="dialog" aria-modal="true" aria-labelledby="panel-resa-title">
+  <h2 id="panel-resa-title">Réserver la borne</h2>
+  <input type="text" id="prenom-input" placeholder="Votre prénom" maxlength="20" autocomplete="given-name" aria-label="Votre prénom">
+  <div class="row">
+    <button class="btn" id="btn-confirm-resa">Réserver 10 min</button>
+    <button class="btn ghost" id="btn-cancel-resa">Annuler</button>
+  </div>
+</section>
+
+<div id="toast" role="status"></div>
 
 <script>
+"use strict";
+
 const BORNES=["B1","B2","B3","B4","B5","B6"];
 const API="/api/bornes";
 const POLL=15000;
 const RESA_DURATION=10*60*1000;
-let state=Object.fromEntries(BORNES.map(id=>[id,{status:"libre",fin:null,resa:null,resaFin:null}]));
-let selectedCharge=null,selectedResa=null;
+const WINDOW_MS=4*3600*1000;
+const EMPTY=()=>({status:"libre",fin:null,resa:null,resaFin:null});
 
+let state=Object.fromEntries(BORNES.map(id=>[id,EMPTY()]));
+let selectedCharge=null,selectedResa=null;
+let ready=false,notify=false;
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ===== API (inchangée) ===== */
 async function apiRead(){const r=await fetch(API);if(!r.ok)throw new Error();return r.json();}
 async function apiWrite(s){const r=await fetch(API,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});if(!r.ok)throw new Error();}
 
+/* ===== Utilitaires ===== */
 function fmtH(iso){if(!iso)return"";return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function fmtMin(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
-function fmtSec(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/1000);}
+function minutesTo(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
+function secondsTo(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/1000);}
+function fmtDur(min){
+  if(min<1)return"moins d'une minute";
+  if(min<60)return min+" min";
+  return Math.floor(min/60)+" h "+String(min%60).padStart(2,"0");
+}
 function isAlarme(b){return b.status==="occupe"&&b.fin&&new Date(b.fin)<Date.now();}
 function isSignale(b){return b.status==="signale";}
 function isResaExpired(b){return b.status==="reservee"&&b.resaFin&&new Date(b.resaFin)<Date.now();}
-function progress(fin){if(!fin)return 0;const t=4*3600*1000,e=t-(new Date(fin)-Date.now());return Math.min(100,Math.max(0,Math.round(e/t*100)));}
+function progress(fin){if(!fin)return 0;const e=WINDOW_MS-(new Date(fin)-Date.now());return Math.min(100,Math.max(0,Math.round(e/WINDOW_MS*100)));}
+function normalizeState(data){
+  const next={};
+  BORNES.forEach(id=>{next[id]=Object.assign(EMPTY(),(data&&data[id])||{});});
+  return next;
+}
 
+/* ===== Etat de connexion ===== */
+function setConn(s,t){
+  const el=$("#conn-status");
+  el.className="conn"+(s==="ok"?" ok":s==="error"?" err":"");
+  el.lastElementChild.textContent=s==="ok"?"Synchronisé à "+t:s==="error"?"Erreur réseau, nouvel essai automatique":"Connexion en cours";
+}
+const nowStr=()=>new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+
+/* ===== Expirations ===== */
 function checkExpiries(){
   let changed=false;const next={...state};
-  BORNES.forEach(id=>{if(isResaExpired(next[id])){next[id]={status:"libre",fin:null,resa:null,resaFin:null};changed=true;}});
+  BORNES.forEach(id=>{if(isResaExpired(next[id])){next[id]=EMPTY();changed=true;}});
   if(changed)saveState(next);
 }
 
-function setConn(s,t){
-  const el=document.getElementById("conn-status");
-  if(s==="ok"){el.style.color="#4ade8055";el.textContent=`✓ ${t}`;}
-  else if(s==="error"){el.style.color="#f87171";el.textContent="⚠ Erreur réseau";}
-  else{el.style.color="#334155";el.textContent="Connexion…";}
+/* ===== Rendu ===== */
+const CONE='<svg viewBox="0 0 44 48" fill="none" aria-hidden="true"><ellipse cx="22" cy="45" rx="14" ry="3" fill="currentColor" opacity=".25"/><polygon points="22,2 38,42 6,42" fill="#f97316"/><polygon points="22,2 36,38 8,38" fill="#fb923c"/><rect x="8" y="32" width="28" height="4" rx="2" fill="#fff" opacity=".9"/><rect x="10" y="24" width="24" height="3.5" rx="1.5" fill="#fff" opacity=".7"/><rect x="13" y="17" width="18" height="3" rx="1.5" fill="#fff" opacity=".5"/></svg>';
+
+function kindOf(b){
+  if(isAlarme(b))return"alarme";
+  if(isSignale(b))return"signale";
+  return b.status;
+}
+const BADGE={libre:"Disponible",occupe:"En charge",reservee:"Réservée",alarme:"Charge terminée",signale:"Charge terminée","hors-service":"Hors service"};
+
+function cardHTML(id,b){
+  const kind=kindOf(b);
+  let body="",acts="";
+  if(kind==="libre"){
+    body='<p class="lead">Prête à brancher</p>';
+    acts='<button class="btn" data-act="plug" data-id="'+id+'">Je me branche</button>'+
+         '<button class="btn ghost" data-act="busy" data-id="'+id+'">Borne occupée</button>';
+  }else if(kind==="reservee"){
+    const sec=secondsTo(b.resaFin),min=minutesTo(b.resaFin);
+    const urgent=sec!==null&&sec<120;
+    body='<div class="resa"><span class="who">'+esc(b.resa||"?")+'</span><span class="timer'+(urgent?" urgent":"")+'">Expire dans '+(min>0?min+" min":"moins d'1 min")+'</span></div>';
+    acts='<button class="btn" data-act="plug" data-id="'+id+'">Je branche !</button>';
+  }else if(kind==="occupe"){
+    if(b.fin){
+      const min=minutesTo(b.fin);
+      body='<div class="fin"><span class="k">Fin estimée</span><span class="t">'+fmtH(b.fin)+'</span><span class="rest">'+(min>0?"dans "+fmtDur(min):"maintenant")+'</span></div>'+
+           '<div class="bar"><i style="width:'+progress(b.fin)+'%"></i></div>';
+    }else{
+      body='<p class="lead">Heure de fin non indiquée</p>';
+    }
+    acts='<button class="btn ghost" data-act="done" data-id="'+id+'">Charge terminée</button>'+
+         '<button class="btn" data-act="free" data-id="'+id+'">Libérer la borne</button>';
+  }else if(kind==="alarme"){
+    const late=Math.max(0,-minutesTo(b.fin));
+    body='<p class="msg"><b>Débranchez SVP</b>Fin dépassée depuis '+fmtDur(late)+'. On partage les bornes, libérez la place.</p>';
+    acts='<button class="btn warn" data-act="free" data-id="'+id+'">Débrancher SVP</button>';
+  }else if(kind==="signale"){
+    body='<p class="msg"><b>Charge terminée</b>Dans un souci de partage, pensez à vous débrancher.</p>';
+    acts='<button class="btn warn" data-act="free" data-id="'+id+'">Débrancher SVP</button>';
+  }else{
+    body='<div class="hs-art">'+CONE+'<span class="lead">Borne indisponible</span></div>';
+    acts='<button class="btn ghost" data-act="hs" data-id="'+id+'">Remettre en service</button>';
+  }
+  let mini="";
+  if(b.status!=="hors-service"){
+    const canResa=b.status!=="reservee"&&!isSignale(b);
+    mini='<div class="mini">'+(canResa?'<button data-act="resa" data-id="'+id+'">Réserver</button>':"")+
+         '<button data-act="hs" data-id="'+id+'">Hors service</button></div>';
+  }
+  const tap=(kind==="libre"||kind==="reservee")?"1":"0";
+  return'<article class="borne" data-id="'+id+'" data-status="'+kind+'" data-tap="'+tap+'">'+
+    '<div class="head"><span class="bid">'+id+'</span><span class="badge"><i></i>'+BADGE[kind]+'</span></div>'+
+    body+'<div class="acts">'+acts+'</div>'+mini+'</article>';
+}
+
+function nextRelease(){
+  let best=null;const now=Date.now();
+  BORNES.forEach(id=>{
+    const b=state[id];
+    if(b.status==="occupe"&&b.fin){
+      const t=Math.max(now,new Date(b.fin).getTime());
+      if(!best||t<best.t)best={id,t};
+    }else if(isSignale(b)){
+      best={id,t:now};
+    }
+  });
+  return best;
 }
 
 function render(){
   checkExpiries();
-  const grid=document.getElementById("grid");grid.innerHTML="";
-  let libres=0,occupees=0,alarmes=0,resas=0;
+  let libres=0,occupees=0,aDebrancher=0,resas=0,hs=0;
   BORNES.forEach(id=>{
-    const b=state[id];
-    const alarme=isAlarme(b),reservee=b.status==="reservee",signale=isSignale(b);
-    if(b.status==="libre")libres++;
-    else if(b.status==="occupe"&&!alarme)occupees++;
-    else if(alarme)alarmes++;
-    else if(reservee)resas++;
-    const min=fmtMin(b.fin),pct=progress(b.fin);
-    const resaSec=fmtSec(b.resaFin),resaMin=fmtMin(b.resaFin);
-    const cardClass=alarme?"alarme":signale?"signale":reservee?"reservee":b.status;
-    const div=document.createElement("div");
-    div.className=`borne ${cardClass}${selectedCharge===id?" selected":""}`;
-    const btnCThtml = (b.status==="occupe"&&!alarme&&!signale) ? `<button class="btn-charge-terminee" data-id="${id}">⚡ Charge terminée</button>` : "";
-    let html=`<div class="borne-top"><div>
-      <div class="borne-id">${id}</div>
-      <div class="borne-status">${alarme?"Charge terminée":signale?"Charge terminée !":reservee?"Réservée":b.status==="libre"?"Disponible":b.status==="occupe"?"En charge":"Hors service"}</div>
-    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">${btnCThtml}<div class="dot-wrap"><div class="dot-ring"></div><div class="dot"></div></div></div></div>`;
-    if(b.status==="libre"){html+=`<span class="sparkle">✦</span><span class="sparkle">✦</span><span class="sparkle">✦</span>`;}
-    if(b.status==="hors-service"){html+=`<div style="padding:4px 0"><div class="hs-stripes"></div><div class="hs-cone"><svg width="44" height="48" viewBox="0 0 44 48" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="22" cy="45" rx="14" ry="3" fill="#f59e0b" opacity="0.5"/><polygon points="22,2 38,42 6,42" fill="#f97316"/><polygon points="22,2 36,38 8,38" fill="#fb923c"/><rect x="8" y="32" width="28" height="4" rx="2" fill="#fff" opacity="0.9"/><rect x="10" y="24" width="24" height="3.5" rx="1.5" fill="#fff" opacity="0.7"/><rect x="13" y="17" width="18" height="3" rx="1.5" fill="#fff" opacity="0.5"/><ellipse cx="22" cy="42" rx="14" ry="2.5" fill="#78350f"/></svg></div><div class="hs-label">Hors service</div></div>`;}
-    if(alarme){
-      html+=`<div class="alarm-banner"><span class="alarm-icon">🔔</span><span class="alarm-text">Débranchez SVP !</span></div>`;
-      html+=`<div class="civisme-box"><div class="civisme-text">On partage les bornes — libérez votre place 🙏</div></div>`;
-      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
-    } else if(signale){
-      html+=`<div class="civisme-rose"><div class="civisme-rose-text">Dans un souci de partage, pensez à vous débrancher</div></div>`;
-      html+=`<button class="btn-debrancher" data-id="${id}">🔌 Débrancher SVP</button>`;
-    } else if(reservee){
-      const urgent=resaSec!==null&&resaSec<120;
-      html+=`<div class="resa-box"><div class="resa-name">👤 ${b.resa||"?"}</div><div class="resa-timer${urgent?" urgent":""}">⏱ Expire dans ${resaMin>0?`${resaMin} min`:"< 1 min"}</div></div>`;
-    } else if(b.status==="occupe"){
-      html+=`<div class="lightning-wrap"><span class="lightning">⚡</span><span class="lightning">⚡</span><span class="lightning">⚡</span></div>`;
-      if(b.fin){html+=`<div class="fin-box"><div class="fin-label">Fin estimée</div><div class="fin-heure">${fmtH(b.fin)}${min>0?`<span class="fin-min">${min} min</span>`:""}</div></div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>`;}
-    }
-    if(b.status!=="hors-service"&&!reservee&&!signale){
-      html+=`<button class="btn-reserver" data-id="${id}" title="Réserver">🪫</button>`;
-    }
-    if(b.status==="libre"){
-      html+=`<button class="btn-sans-appli" data-id="${id}">Borne occupée</button>`;
-    }
-    html+=`<div class="borne-actions">
-      <button class="hs-btn" data-id="${id}">${b.status==="hors-service"?"✓ Remettre":"Hors service"}</button>
-      <span class="tap-hint">${b.status==="libre"?"Tap pour brancher":alarme?"Tap pour libérer":reservee?"Tap — je branche !":b.status==="occupe"?"Tap pour libérer":""}</span>
-    </div>`;
-    div.innerHTML=html;
-    if(b.status!=="hors-service"){
-      div.addEventListener("click",e=>{
-        if(e.target.classList.contains("hs-btn")||e.target.classList.contains("btn-reserver"))return;
-        handleBorne(id);
-      });
-    }
-    div.querySelector(".hs-btn").addEventListener("click",e=>{e.stopPropagation();toggleHS(id);});
-    const btnR=div.querySelector(".btn-reserver");
-    if(btnR)btnR.addEventListener("click",e=>{e.stopPropagation();openResa(id);});
-    const btnSA=div.querySelector(".btn-sans-appli");
-    if(btnSA)btnSA.addEventListener("click",e=>{e.stopPropagation();marquerSansAppli(id);});
-    const btnD=div.querySelector(".btn-debrancher");
-    if(btnD)btnD.addEventListener("click",e=>{e.stopPropagation();saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});});
-    const btnCT=div.querySelector(".btn-charge-terminee");
-    if(btnCT)btnCT.addEventListener("click",e=>{e.stopPropagation();saveState({...state,[id]:{status:"signale",fin:null,resa:null,resaFin:null}});});
-    grid.appendChild(div);
+    const b=state[id],k=kindOf(b);
+    if(k==="libre")libres++;
+    else if(k==="occupe")occupees++;
+    else if(k==="alarme"||k==="signale")aDebrancher++;
+    else if(k==="reservee")resas++;
+    else if(k==="hors-service")hs++;
   });
-  document.getElementById("stat-libres").textContent=`● ${libres} libre${libres>1?"s":""}`;
-  const elO=document.getElementById("stat-occupees");elO.style.display=occupees>0?"":"none";elO.textContent=`● ${occupees} en charge`;
-  const elA=document.getElementById("stat-alarmes");elA.style.display=alarmes>0?"":"none";elA.textContent=`● ${alarmes} à débrancher`;
-  const elR=document.getElementById("stat-resas");elR.style.display=resas>0?"":"none";elR.textContent=`● ${resas} réservée${resas>1?"s":""}`;
-}
+  $("#grid").innerHTML=BORNES.map(id=>cardHTML(id,state[id])).join("");
 
-function openResa(id){
-  selectedResa=id;
-  document.getElementById("panel-resa-title").textContent=`Réserver borne ${id}`;
-  document.getElementById("prenom-input").value="";
-  document.getElementById("panel-charge").classList.remove("visible");
-  document.getElementById("panel-resa").classList.add("visible");
-  document.getElementById("panel-resa").scrollIntoView({behavior:"smooth",block:"nearest"});
-}
+  const n=$("#big-n");
+  n.textContent=libres;
+  n.className=libres===0?"none":"";
+  $("#big-l").textContent=(libres>1?"bornes libres":"borne libre")+" sur "+BORNES.length;
 
-function handleBorne(id){
-  const b=state[id];
-  if(b.status==="occupe"||isAlarme(b)||isSignale(b)){
-    saveState({...state,[id]:{status:"libre",fin:null,resa:null,resaFin:null}});
-  } else if(b.status==="libre"||b.status==="reservee"){
-    selectedCharge=id;
-    document.getElementById("panel-charge-title").textContent=`Borne ${id} — Heure de fin`;
-    const def=new Date(Date.now()+2*3600*1000);
-    document.getElementById("time-input").value=def.toTimeString().slice(0,5);
-    document.getElementById("panel-resa").classList.remove("visible");
-    document.getElementById("panel-charge").classList.add("visible");
-    render();
-    document.getElementById("panel-charge").scrollIntoView({behavior:"smooth",block:"nearest"});
+  const chips=[];
+  if(occupees)chips.push('<span class="chip c-charging"><i></i>'+occupees+' en charge</span>');
+  if(aDebrancher)chips.push('<span class="chip c-alarm"><i></i>'+aDebrancher+' à débrancher</span>');
+  if(resas)chips.push('<span class="chip c-resa"><i></i>'+resas+(resas>1?" réservées":" réservée")+'</span>');
+  if(hs)chips.push('<span class="chip c-hs"><i></i>'+hs+' hors service</span>');
+  $("#chips").innerHTML=chips.join("");
+
+  const nx=$("#next"),nr=libres===0?nextRelease():null;
+  if(nr){
+    nx.hidden=false;
+    const min=Math.round((nr.t-Date.now())/60000);
+    nx.innerHTML='Prochaine libération : <b>'+nr.id+'</b> '+(min>0?'vers <b>'+fmtH(new Date(nr.t).toISOString())+'</b>':'dès maintenant');
+  }else{
+    nx.hidden=true;
   }
 }
 
+/* ===== Panneaux ===== */
+function openSheet(which){
+  $("#panel-charge").classList.toggle("visible",which==="charge");
+  $("#panel-resa").classList.toggle("visible",which==="resa");
+  $("#backdrop").classList.add("on");
+  setTimeout(()=>{(which==="charge"?$("#time-input"):$("#prenom-input")).focus();},260);
+}
+function closeSheets(){
+  selectedCharge=null;selectedResa=null;
+  $("#panel-charge").classList.remove("visible");
+  $("#panel-resa").classList.remove("visible");
+  $("#backdrop").classList.remove("on");
+}
+function setTimeIn(hours){
+  const d=new Date(Date.now()+hours*3600*1000);
+  $("#time-input").value=d.toTimeString().slice(0,5);
+}
+function openResa(id){
+  selectedResa=id;selectedCharge=null;
+  $("#panel-resa-title").textContent="Réserver la borne "+id;
+  $("#prenom-input").value="";
+  openSheet("resa");
+}
+function handleBorne(id){
+  const b=state[id];
+  if(b.status==="libre"||b.status==="reservee"){
+    selectedCharge=id;selectedResa=null;
+    $("#panel-charge-title").textContent="Borne "+id+", heure de fin";
+    setTimeIn(2);
+    openSheet("charge");
+  }
+}
 async function toggleHS(id){
   const b=state[id];
-  await saveState({...state,[id]:{status:b.status==="hors-service"?"libre":"hors-service",fin:null,resa:null,resaFin:null}});
+  await saveState({...state,[id]:{...EMPTY(),status:b.status==="hors-service"?"libre":"hors-service"}});
 }
-
-document.getElementById("btn-confirm").addEventListener("click",async()=>{
-  if(!selectedCharge)return;
-  const[h,m]=document.getElementById("time-input").value.split(":").map(Number);
-  const fin=new Date();fin.setHours(h,m,0,0);if(fin<Date.now())fin.setDate(fin.getDate()+1);
-  const btn=document.getElementById("btn-confirm");btn.disabled=true;btn.textContent="Enregistrement…";
-  await saveState({...state,[selectedCharge]:{status:"occupe",fin:fin.toISOString(),resa:null,resaFin:null}});
-  selectedCharge=null;document.getElementById("panel-charge").classList.remove("visible");
-  btn.disabled=false;btn.textContent="⚡ Confirmer";
-});
-document.getElementById("btn-cancel-charge").addEventListener("click",()=>{selectedCharge=null;document.getElementById("panel-charge").classList.remove("visible");render();});
-
-document.getElementById("btn-confirm-resa").addEventListener("click",async()=>{
-  if(!selectedResa)return;
-  const prenom=document.getElementById("prenom-input").value.trim();
-  if(!prenom){document.getElementById("prenom-input").focus();return;}
-  const resaFin=new Date(Date.now()+RESA_DURATION).toISOString();
-  const btn=document.getElementById("btn-confirm-resa");btn.disabled=true;btn.textContent="Réservation…";
-  const b=state[selectedResa];
-  await saveState({...state,[selectedResa]:{...b,resa:prenom,resaFin,status:b.status==="libre"?"reservee":b.status}});
-  selectedResa=null;document.getElementById("panel-resa").classList.remove("visible");
-  btn.disabled=false;btn.textContent="Réserver 10 min";
-});
-document.getElementById("btn-cancel-resa").addEventListener("click",()=>{selectedResa=null;document.getElementById("panel-resa").classList.remove("visible");render();});
-
 function marquerSansAppli(id){
   saveState({...state,[id]:{status:"occupe",fin:null,resa:null,resaFin:null}});
 }
 
+$("#grid").addEventListener("click",e=>{
+  const btn=e.target.closest("[data-act]");
+  if(btn){
+    e.stopPropagation();
+    const id=btn.dataset.id;
+    switch(btn.dataset.act){
+      case"plug":handleBorne(id);break;
+      case"busy":marquerSansAppli(id);break;
+      case"done":saveState({...state,[id]:{...EMPTY(),status:"signale"}});break;
+      case"free":saveState({...state,[id]:EMPTY()});break;
+      case"resa":openResa(id);break;
+      case"hs":toggleHS(id);break;
+    }
+    return;
+  }
+  const card=e.target.closest(".borne");
+  if(card&&card.dataset.tap==="1")handleBorne(card.dataset.id);
+});
+
+document.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>setTimeIn(Number(b.dataset.add))));
+
+$("#btn-confirm").addEventListener("click",async()=>{
+  if(!selectedCharge)return;
+  const val=$("#time-input").value;
+  if(!val){$("#time-input").focus();return;}
+  const[h,m]=val.split(":").map(Number);
+  const fin=new Date();fin.setHours(h,m,0,0);if(fin<Date.now())fin.setDate(fin.getDate()+1);
+  const btn=$("#btn-confirm"),id=selectedCharge;
+  btn.disabled=true;btn.textContent="Enregistrement…";
+  closeSheets();
+  await saveState({...state,[id]:{status:"occupe",fin:fin.toISOString(),resa:null,resaFin:null}});
+  btn.disabled=false;btn.textContent="Confirmer";
+});
+$("#btn-cancel-charge").addEventListener("click",closeSheets);
+
+async function submitResa(){
+  if(!selectedResa)return;
+  const prenom=$("#prenom-input").value.trim();
+  if(!prenom){$("#prenom-input").focus();return;}
+  const resaFin=new Date(Date.now()+RESA_DURATION).toISOString();
+  const btn=$("#btn-confirm-resa"),id=selectedResa,b=state[id];
+  btn.disabled=true;btn.textContent="Réservation…";
+  closeSheets();
+  await saveState({...state,[id]:{...b,resa:prenom,resaFin,status:b.status==="libre"?"reservee":b.status}});
+  btn.disabled=false;btn.textContent="Réserver 10 min";
+}
+$("#btn-confirm-resa").addEventListener("click",submitResa);
+$("#prenom-input").addEventListener("keydown",e=>{if(e.key==="Enter")submitResa();});
+$("#btn-cancel-resa").addEventListener("click",closeSheets);
+$("#backdrop").addEventListener("click",closeSheets);
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    if($("#backdrop").classList.contains("on"))closeSheets();
+    else if(document.body.classList.contains("display"))setDisplay(false);
+  }
+});
+
+$("#btn-reset").addEventListener("click",()=>{
+  if(!confirm("Remettre toutes les bornes en disponible ?"))return;
+  saveState(Object.fromEntries(BORNES.map(id=>[id,EMPTY()])));
+});
+
+/* ===== Sauvegarde et synchronisation ===== */
 async function saveState(next){
   state=next;render();
-  try{await apiWrite(next);setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
-  catch{setConn("error");}
+  try{await apiWrite(next);setConn("ok",nowStr());}
+  catch(e){setConn("error");}
+}
+
+let toastTimer;
+function toast(msg){
+  const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),4500);
+}
+function announceFreed(ids){
+  if(!notify)return;
+  const msg=ids.length>1?"Bornes libres : "+ids.join(", "):"La borne "+ids[0]+" est libre";
+  toast(msg);
+  try{if("Notification" in window&&Notification.permission==="granted")new Notification("Bornes Polytech",{body:msg});}catch(e){}
 }
 
 async function poll(){
-  try{const data=await apiRead();state=data;render();setConn("ok",new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));}
-  catch{setConn("error");}
+  try{
+    const data=normalizeState(await apiRead());
+    const freed=ready?BORNES.filter(id=>state[id].status!=="libre"&&data[id].status==="libre"):[];
+    state=data;ready=true;render();
+    setConn("ok",nowStr());
+    if(freed.length)announceFreed(freed);
+  }catch(e){setConn("error");}
 }
 
-document.getElementById("btn-reset").addEventListener("click",()=>{
-  if(!confirm("Remettre toutes les bornes en disponible ?"))return;
-  const next=Object.fromEntries(BORNES.map(id=>[id,{status:"libre",fin:null,resa:null,resaFin:null}]));
-  saveState(next);
+/* ===== Options : alerte, theme, affichage ===== */
+$("#btn-bell").addEventListener("click",async()=>{
+  const btn=$("#btn-bell");
+  if(notify){notify=false;btn.setAttribute("aria-pressed","false");toast("Alerte désactivée");return;}
+  if("Notification" in window&&Notification.permission==="default"){
+    try{await Notification.requestPermission();}catch(e){}
+  }
+  notify=true;btn.setAttribute("aria-pressed","true");
+  toast("Vous serez prévenu quand une borne se libère, tant que cette page reste ouverte");
 });
+function applyTheme(t){
+  if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);
+  else document.documentElement.removeAttribute("data-theme");
+  const dark=t==="dark"||(t!=="light"&&!window.matchMedia("(prefers-color-scheme: light)").matches);
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute("content",dark?"#0b1b33":"#f5efe0");
+}
+function savedTheme(){try{return localStorage.getItem("bornes_theme");}catch(e){return null;}}
+$("#btn-theme").addEventListener("click",()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const dark=cur==="dark"||(!cur&&!window.matchMedia("(prefers-color-scheme: light)").matches);
+  const next=dark?"light":"dark";
+  try{localStorage.setItem("bornes_theme",next);}catch(e){}
+  applyTheme(next);
+});
+function setDisplay(on){
+  document.body.classList.toggle("display",on);
+  clockTick();
+  if(!on&&document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});
+}
+$("#btn-display").addEventListener("click",()=>{
+  setDisplay(true);
+  const el=document.documentElement;
+  if(el.requestFullscreen)el.requestFullscreen().catch(()=>{});
+});
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)document.body.classList.remove("display");});
+function clockTick(){
+  if(document.body.classList.contains("display")){
+    $("#clock").textContent=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  }
+}
 
+/* ===== Demarrage ===== */
+applyTheme(savedTheme());
+if(new URLSearchParams(location.search).get("display")==="1")setDisplay(true);
 setInterval(render,30000);
+setInterval(clockTick,1000);
 render();poll();setInterval(poll,POLL);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll();});
 </script>
 </body>
 </html>

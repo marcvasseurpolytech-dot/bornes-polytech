@@ -118,8 +118,8 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .btn.ghost{background:transparent; color:var(--ink); border-color:var(--line)}
 .btn.warn{background:var(--alarm); border-color:var(--alarm); color:#0b1b33}
 .btn:disabled{opacity:.6; cursor:wait}
-.mini{display:flex; gap:6px}
-.mini button{flex:1; min-height:38px; font-size:.85rem; border:1px solid var(--line); background:transparent; border-radius:9px; padding:4px 6px; color:var(--muted)}
+.mini{display:flex; flex-wrap:wrap; gap:6px}
+.mini button{flex:1 1 auto; min-height:38px; font-size:.85rem; border:1px solid var(--line); background:transparent; border-radius:9px; padding:4px 6px; color:var(--muted)}
 .mini button:hover{color:var(--ink); border-color:var(--gold)}
 
 .foot{margin-top:18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--muted); font-size:.85rem}
@@ -229,10 +229,10 @@ body.display .next{font-size:1.2rem}
 </section>
 
 <section class="sheet" id="panel-resa" role="dialog" aria-modal="true" aria-labelledby="panel-resa-title">
-  <h2 id="panel-resa-title">Réserver la borne</h2>
+  <h2 id="panel-resa-title">J'aimerais charger</h2>
   <input type="text" id="prenom-input" placeholder="Votre prénom" maxlength="20" autocomplete="given-name" aria-label="Votre prénom">
   <div class="row">
-    <button class="btn" id="btn-confirm-resa">Réserver 10 min</button>
+    <button class="btn" id="btn-confirm-resa">Confirmer pour 10 min</button>
     <button class="btn ghost" id="btn-cancel-resa">Annuler</button>
   </div>
 </section>
@@ -302,7 +302,7 @@ function kindOf(b){
   if(isSignale(b))return"signale";
   return b.status;
 }
-const BADGE={libre:"Disponible",occupe:"En charge",reservee:"Réservée",alarme:"Charge terminée",signale:"Charge terminée","hors-service":"Hors service"};
+const BADGE={libre:"Disponible",occupe:"En charge",reservee:"J'aimerais charger",alarme:"Charge terminée",signale:"Charge terminée","hors-service":"Hors service"};
 
 function cardHTML(id,b){
   const kind=kindOf(b);
@@ -340,7 +340,7 @@ function cardHTML(id,b){
   let mini="";
   if(b.status!=="hors-service"){
     const canResa=b.status!=="reservee"&&!isSignale(b);
-    mini='<div class="mini">'+(canResa?'<button data-act="resa" data-id="'+id+'">Réserver</button>':"")+
+    mini='<div class="mini">'+(canResa?'<button data-act="resa" data-id="'+id+'">J\'aimerais charger</button>':"")+
          '<button data-act="hs" data-id="'+id+'">Hors service</button></div>';
   }
   const tap=(kind==="libre"||kind==="reservee")?"1":"0";
@@ -384,7 +384,7 @@ function render(){
   const chips=[];
   if(occupees)chips.push('<span class="chip c-charging"><i></i>'+occupees+' en charge</span>');
   if(aDebrancher)chips.push('<span class="chip c-alarm"><i></i>'+aDebrancher+' à débrancher</span>');
-  if(resas)chips.push('<span class="chip c-resa"><i></i>'+resas+(resas>1?" réservées":" réservée")+'</span>');
+  if(resas)chips.push('<span class="chip c-resa"><i></i>'+resas+(resas>1?" souhaitent charger":" souhaite charger")+'</span>');
   if(hs)chips.push('<span class="chip c-hs"><i></i>'+hs+' hors service</span>');
   $("#chips").innerHTML=chips.join("");
 
@@ -417,7 +417,7 @@ function setTimeIn(hours){
 }
 function openResa(id){
   selectedResa=id;selectedCharge=null;
-  $("#panel-resa-title").textContent="Réserver la borne "+id;
+  $("#panel-resa-title").textContent="J'aimerais charger sur "+id;
   $("#prenom-input").value="";
   openSheet("resa");
 }
@@ -479,10 +479,10 @@ async function submitResa(){
   if(!prenom){$("#prenom-input").focus();return;}
   const resaFin=new Date(Date.now()+RESA_DURATION).toISOString();
   const btn=$("#btn-confirm-resa"),id=selectedResa,b=state[id];
-  btn.disabled=true;btn.textContent="Réservation…";
+  btn.disabled=true;btn.textContent="Envoi…";
   closeSheets();
   await saveState({...state,[id]:{...b,resa:prenom,resaFin,status:b.status==="libre"?"reservee":b.status}});
-  btn.disabled=false;btn.textContent="Réserver 10 min";
+  btn.disabled=false;btn.textContent="Confirmer pour 10 min";
 }
 $("#btn-confirm-resa").addEventListener("click",submitResa);
 $("#prenom-input").addEventListener("keydown",e=>{if(e.key==="Enter")submitResa();});

@@ -12,15 +12,27 @@ function buildMessage(prev, next) {
   if (!prev || !next || typeof prev !== "object" || typeof next !== "object") return null;
   const freed = [];
   const done = [];
+  const wants = [];
+  const now = Date.now();
+  const activeResa = (b) => !!(b && b.resa && b.resaFin && Date.parse(b.resaFin) > now);
   for (const id of Object.keys(next)) {
     if (!ID_OK.test(id)) continue;
-    const before = prev[id] && prev[id].status;
-    const after = next[id] && next[id].status;
-    if (!before || !after || before === after) continue;
+    const p = prev[id] || {};
+    const n = next[id] || {};
+    const before = p.status;
+    const after = n.status;
+    if (!before || !after) continue;
+    if (before === after) {
+      // Nouvelle demande "J'aimerais charger" sur une borne deja occupee.
+      // Pas de doublon tant qu'une demande precedente est encore valable.
+      if (after === "occupe" && activeResa(n) && !activeResa(p)) wants.push(id);
+      continue;
+    }
     if (after === "libre" && (before === "occupe" || before === "signale")) freed.push(id);
     else if (after === "signale" && before === "occupe") done.push(id);
   }
   const lines = [];
+  wants.sort().forEach((id) => lines.push("🙋 Bonjour, j'aimerais charger sur la borne " + id + " quand elle sera libre, merci !"));
   done.sort().forEach((id) => lines.push("🔌 " + id + " : charge terminée, merci de débrancher"));
   if (freed.length === 1) lines.push("🟢 " + freed[0] + " est libre");
   else if (freed.length > 1) lines.push("🟢 Bornes libres : " + freed.sort().join(", "));

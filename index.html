@@ -209,6 +209,13 @@ function cardHTML(id,b){
 }
 
 function render(){
+  if(!ready){
+    $("#grid").innerHTML="";
+    const n0=$("#big-n");n0.textContent="–";n0.className="";
+    $("#big-l").textContent="Lecture de l'état des bornes";
+    $("#chips").innerHTML="";
+    return;
+  }
   let libres=0,occupees=0,aDebrancher=0;
   BORNES.forEach(id=>{
     const k=state[id].status;

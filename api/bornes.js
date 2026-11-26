@@ -28,8 +28,8 @@ function buildMessage(prev, next) {
       if (after === "occupe" && activeResa(n) && !activeResa(p)) wants.push(id);
       continue;
     }
-    if (after === "libre" && (before === "occupe" || before === "signale")) freed.push(id);
-    else if (after === "signale" && before === "occupe") done.push(id);
+    if (after === "libre" && (before === "occupe" || before === "signale" || before === "attente")) freed.push(id);
+    else if (after === "signale" && (before === "occupe" || before === "attente")) done.push(id);
   }
   const lines = [];
   wants.sort().forEach((id) => lines.push("🙋 Bonjour, j'aimerais charger sur la borne " + id + " quand elle sera libre, merci !"));

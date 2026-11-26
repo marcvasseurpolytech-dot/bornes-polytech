@@ -64,7 +64,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
 .chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); font-size:.88rem; background:var(--card2)}
 .chip i{width:8px; height:8px; border-radius:50%; background:var(--c)}
-.chip.c-charging{--c:var(--charging)} .chip.c-alarm{--c:var(--signal)}
+.chip.c-charging{--c:var(--charging)} .chip.c-alarm{--c:var(--signal)} .chip.c-wait{--c:var(--gold)}
 .conn{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.85rem; color:var(--muted)}
 .conn i{width:9px; height:9px; border-radius:50%; background:var(--hs)}
 .conn.ok i{background:var(--free)}
@@ -82,6 +82,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .borne[data-status="libre"]{--c:var(--free)}
 .borne[data-status="occupe"]{--c:var(--charging)}
 .borne[data-status="signale"]{--c:var(--signal)}
+.borne[data-status="attente"]{--c:var(--gold)}
 .head{display:flex; align-items:center; justify-content:space-between; gap:6px}
 .bid{font-family:var(--serif); font-weight:700; font-size:1.6rem; line-height:1}
 .badge{display:inline-flex; align-items:center; gap:6px; color:var(--c); font-size:.86rem; font-weight:600; text-align:right}
@@ -165,7 +166,7 @@ body.display .lead, body.display .msg{font-size:1.2rem}
 const BORNES=["B1","B2","B3","B4","B5","B6"];
 const API="/api/bornes";
 const POLL=15000;
-const KINDS=["libre","occupe","signale"];
+const KINDS=["libre","occupe","attente","signale"];
 const EMPTY=()=>({status:"libre",fin:null,resa:null,resaFin:null});
 
 let state=Object.fromEntries(BORNES.map(id=>[id,EMPTY()]));
@@ -195,13 +196,14 @@ function setConn(s,t){
 const nowStr=()=>new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 
 /* ===== Rendu ===== */
-const BADGE={libre:"Disponible",occupe:"En charge",signale:"Charge terminée"};
+const BADGE={libre:"Disponible",occupe:"En charge",attente:"En attente",signale:"Charge terminée"};
 
 function cardHTML(id,b){
   const kind=b.status;
   let body="";
   if(kind==="libre")body='<p class="lead">Prête à brancher</p>';
   else if(kind==="occupe")body='<p class="lead">Un véhicule est en charge</p>';
+  else if(kind==="attente")body='<p class="lead">Véhicule branché, la charge n\'a pas encore démarré</p>';
   else body='<p class="msg"><b>Charge terminée</b>Dans un souci de partage, pensez à vous débrancher.</p>';
   return'<article class="borne" data-id="'+id+'" data-status="'+kind+'">'+
     '<div class="head"><span class="bid">'+id+'</span><span class="badge"><i></i>'+BADGE[kind]+'</span></div>'+
@@ -216,11 +218,12 @@ function render(){
     $("#chips").innerHTML="";
     return;
   }
-  let libres=0,occupees=0,aDebrancher=0;
+  let libres=0,occupees=0,enAttente=0,aDebrancher=0;
   BORNES.forEach(id=>{
     const k=state[id].status;
     if(k==="libre")libres++;
     else if(k==="occupe")occupees++;
+    else if(k==="attente")enAttente++;
     else aDebrancher++;
   });
   $("#grid").innerHTML=BORNES.map(id=>cardHTML(id,state[id])).join("");
@@ -232,6 +235,7 @@ function render(){
 
   const chips=[];
   if(occupees)chips.push('<span class="chip c-charging"><i></i>'+occupees+' en charge</span>');
+  if(enAttente)chips.push('<span class="chip c-wait"><i></i>'+enAttente+' en attente de démarrage</span>');
   if(aDebrancher)chips.push('<span class="chip c-alarm"><i></i>'+aDebrancher+' à débrancher</span>');
   $("#chips").innerHTML=chips.join("");
 }

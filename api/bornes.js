@@ -6,33 +6,31 @@ const TG_CHAT = process.env.TELEGRAM_CHAT_ID;
 const ID_OK = /^B[1-6]$/;
 
 // Compare l'ancien et le nouvel etat, et construit le message a envoyer (ou null).
-// Seuls les identifiants B1 a B6 sont pris en compte, et aucun texte libre
-// (comme un prenom) n'est jamais repris dans le message.
+// Chaque changement d'etat entre libre / en charge / en attente / charge terminee est signale.
+// Seuls les identifiants B1 a B6 sont pris en compte, et aucun texte libre n'est repris.
+const KNOWN = ["libre", "occupe", "attente", "signale"];
+
 function buildMessage(prev, next) {
   if (!prev || !next || typeof prev !== "object" || typeof next !== "object") return null;
   const freed = [];
   const done = [];
-  const wants = [];
-  const now = Date.now();
-  const activeResa = (b) => !!(b && b.resa && b.resaFin && Date.parse(b.resaFin) > now);
+  const started = [];
+  const waiting = [];
   for (const id of Object.keys(next)) {
     if (!ID_OK.test(id)) continue;
-    const p = prev[id] || {};
-    const n = next[id] || {};
-    const before = p.status;
-    const after = n.status;
-    if (!before || !after) continue;
-    if (before === after) {
-      // Nouvelle demande "J'aimerais charger" sur une borne deja occupee.
-      // Pas de doublon tant qu'une demande precedente est encore valable.
-      if (after === "occupe" && activeResa(n) && !activeResa(p)) wants.push(id);
-      continue;
-    }
-    if (after === "libre" && (before === "occupe" || before === "signale" || before === "attente")) freed.push(id);
-    else if (after === "signale" && (before === "occupe" || before === "attente")) done.push(id);
+    const before = (prev[id] || {}).status;
+    const after = (next[id] || {}).status;
+    if (!KNOWN.includes(before) || !KNOWN.includes(after) || before === after) continue;
+    if (after === "libre") freed.push(id);
+    else if (after === "signale") done.push(id);
+    else if (after === "attente") waiting.push(id);
+    else if (after === "occupe") started.push(id);
   }
   const lines = [];
-  wants.sort().forEach((id) => lines.push("🙋 Bonjour, j'aimerais charger sur la borne " + id + " quand elle sera libre, merci !"));
+  if (started.length === 1) lines.push("🔵 " + started[0] + " : charge en cours");
+  else if (started.length > 1) lines.push("🔵 Charges en cours : " + started.sort().join(", "));
+  if (waiting.length === 1) lines.push("🟡 " + waiting[0] + " : véhicule branché, en attente de démarrage");
+  else if (waiting.length > 1) lines.push("🟡 Véhicules branchés, en attente de démarrage : " + waiting.sort().join(", "));
   done.sort().forEach((id) => lines.push("🔌 " + id + " : charge terminée, merci de débrancher"));
   if (freed.length === 1) lines.push("🟢 " + freed[0] + " est libre");
   else if (freed.length > 1) lines.push("🟢 Bornes libres : " + freed.sort().join(", "));

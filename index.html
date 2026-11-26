@@ -12,7 +12,7 @@
 :root{
   --bg:#0b1b33; --card:#10264a; --card2:#163259; --line:#25457a; --ink:#f5efe0; --muted:#9fb1cf;
   --gold:#d9b15a; --on-gold:#0b1b33;
-  --free:#7ad9a8; --charging:#74b6ff; --resa:#b3aeff; --alarm:#ff9273; --signal:#f4a3c8; --hs:#8492ad;
+  --free:#7ad9a8; --charging:#74b6ff; --alarm:#ff9273; --signal:#f4a3c8; --hs:#8492ad;
   --serif:"Playfair Display", Georgia, serif;
   --body:"Source Serif 4", Georgia, "Times New Roman", serif;
   --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -22,14 +22,14 @@
   :root:not([data-theme="dark"]){
     --bg:#f5efe0; --card:#fffaf0; --card2:#f0e7d0; --line:#d8ccae; --ink:#0b1b33; --muted:#5c6b85;
     --gold:#9a7212; --on-gold:#fffaf0;
-    --free:#1c7c52; --charging:#1b5fc4; --resa:#5a4fd0; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
+    --free:#1c7c52; --charging:#1b5fc4; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
     color-scheme:light;
   }
 }
 :root[data-theme="light"]{
   --bg:#f5efe0; --card:#fffaf0; --card2:#f0e7d0; --line:#d8ccae; --ink:#0b1b33; --muted:#5c6b85;
   --gold:#9a7212; --on-gold:#fffaf0;
-  --free:#1c7c52; --charging:#1b5fc4; --resa:#5a4fd0; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
+  --free:#1c7c52; --charging:#1b5fc4; --alarm:#c2410c; --signal:#b8266b; --hs:#5c6b85;
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -64,9 +64,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
 .chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); font-size:.88rem; background:var(--card2)}
 .chip i{width:8px; height:8px; border-radius:50%; background:var(--c)}
-.chip.c-charging{--c:var(--charging)} .chip.c-alarm{--c:var(--alarm)} .chip.c-resa{--c:var(--resa)} .chip.c-hs{--c:var(--hs)}
-.next{margin:10px 0 0; color:var(--muted); font-size:.95rem}
-.next b{font-family:var(--mono); font-weight:700; color:var(--ink)}
+.chip.c-charging{--c:var(--charging)} .chip.c-alarm{--c:var(--signal)}
 .conn{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.85rem; color:var(--muted)}
 .conn i{width:9px; height:9px; border-radius:50%; background:var(--hs)}
 .conn.ok i{background:var(--free)}
@@ -83,12 +81,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 }
 .borne[data-status="libre"]{--c:var(--free)}
 .borne[data-status="occupe"]{--c:var(--charging)}
-.borne[data-status="reservee"]{--c:var(--resa)}
-.borne[data-status="alarme"]{--c:var(--alarm); animation:alarm 2.2s ease-in-out infinite}
 .borne[data-status="signale"]{--c:var(--signal)}
-.borne[data-status="hors-service"]{--c:var(--hs)}
-.borne[data-tap="1"]{cursor:pointer}
-@keyframes alarm{50%{box-shadow:0 0 0 3px color-mix(in srgb, var(--alarm) 45%, transparent)}}
 .head{display:flex; align-items:center; justify-content:space-between; gap:6px}
 .bid{font-family:var(--serif); font-weight:700; font-size:1.6rem; line-height:1}
 .badge{display:inline-flex; align-items:center; gap:6px; color:var(--c); font-size:.86rem; font-weight:600; text-align:right}
@@ -96,57 +89,10 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 .borne[data-status="occupe"] .badge i{animation:blink 1.8s ease-in-out infinite}
 @keyframes blink{50%{opacity:.3}}
 .lead{margin:0; color:var(--muted); font-size:.95rem}
-.fin{display:flex; flex-direction:column; gap:2px}
-.fin .k{color:var(--muted); font-size:.85rem}
-.fin .t{font-family:var(--mono); font-weight:700; font-size:1.7rem; line-height:1.1}
-.fin .rest{color:var(--charging); font-size:.9rem}
-.bar{height:6px; border-radius:99px; background:var(--card2); overflow:hidden}
-.bar i{display:block; height:100%; background:var(--c); border-radius:99px; transition:width .6s ease}
-.resa{display:flex; flex-direction:column; gap:2px}
-.resa .who{font-weight:600; font-size:1.05rem; overflow-wrap:anywhere}
-.resa .timer{font-family:var(--mono); font-size:.85rem; color:var(--resa)}
-.resa .timer.urgent{color:var(--alarm)}
-.wait{margin:0; padding:6px 10px; border-radius:10px; font-size:.88rem; color:var(--resa); background:color-mix(in srgb, var(--resa) 14%, transparent); border:1px solid color-mix(in srgb, var(--resa) 45%, transparent); overflow-wrap:anywhere}
 .msg{margin:0; padding:8px 10px; border-radius:10px; font-size:.9rem; background:color-mix(in srgb, var(--c) 14%, transparent); border:1px solid color-mix(in srgb, var(--c) 45%, transparent)}
 .msg b{display:block; font-family:var(--serif); font-size:1.1rem; color:var(--c)}
-.hs-art{display:flex; align-items:center; gap:10px; color:var(--muted)}
-.hs-art svg{width:40px; height:44px; flex:none}
-.acts{display:flex; flex-direction:column; gap:6px; margin-top:auto}
-.btn{
-  min-height:44px; padding:8px 12px; border-radius:10px; border:1px solid var(--gold);
-  background:var(--gold); color:var(--on-gold); font-weight:600; text-align:center;
-}
-.btn.ghost{background:transparent; color:var(--ink); border-color:var(--line)}
-.btn.warn{background:var(--alarm); border-color:var(--alarm); color:#0b1b33}
-.btn:disabled{opacity:.6; cursor:wait}
-.mini{display:flex; flex-wrap:wrap; gap:6px}
-.mini button{flex:1 1 auto; min-height:38px; font-size:.85rem; border:1px solid var(--line); background:transparent; border-radius:9px; padding:4px 6px; color:var(--muted)}
-.mini button:hover{color:var(--ink); border-color:var(--gold)}
 
-.foot{margin-top:18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--muted); font-size:.85rem}
-.reset{border:1px solid var(--line); background:transparent; border-radius:10px; padding:10px 14px; color:var(--muted)}
-.reset:hover{color:var(--ink); border-color:var(--gold)}
-
-/* Panneaux */
-.backdrop{position:fixed; inset:0; background:rgba(3,10,22,.62); opacity:0; pointer-events:none; transition:opacity .2s; z-index:20}
-.backdrop.on{opacity:1; pointer-events:auto}
-.sheet{
-  position:fixed; left:0; right:0; bottom:0; z-index:21; margin:0 auto; max-width:520px;
-  background:var(--card); border:1px solid var(--line); border-bottom:0; border-radius:18px 18px 0 0;
-  padding:18px 16px max(20px,env(safe-area-inset-bottom)); transform:translateY(105%); transition:transform .25s ease; visibility:hidden;
-}
-.sheet.visible{transform:none; visibility:visible}
-.sheet h2{margin:0 0 12px; font-family:var(--serif); font-size:1.3rem}
-.quick{display:flex; gap:8px; margin-bottom:10px}
-.quick button{flex:1; min-height:42px; border:1px solid var(--line); background:var(--card2); border-radius:10px}
-.quick button:hover{border-color:var(--gold)}
-.sheet input{
-  width:100%; min-height:48px; padding:8px 12px; border-radius:10px; border:1px solid var(--line);
-  background:var(--bg); font-size:1.2rem;
-}
-.sheet input[type="time"]{font-family:var(--mono)}
-.row{display:flex; gap:8px; margin-top:12px}
-.row .btn{flex:1}
+.foot{margin-top:18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--muted); font-size:.85rem; text-align:center}
 
 #toast{
   position:fixed; left:50%; bottom:max(22px,env(safe-area-inset-bottom)); transform:translate(-50%,30px); z-index:30;
@@ -161,7 +107,7 @@ h1{margin:2px 0 0; font-family:var(--serif); font-weight:700; font-size:1.7rem; 
 }
 
 /* Mode affichage */
-body.display .tools, body.display .foot, body.display .mini, body.display .acts .btn{display:none}
+body.display .tools, body.display .foot{display:none}
 body.display .clock{display:block}
 body.display .grid{grid-template-columns:repeat(3,1fr); gap:18px}
 body.display h1{font-size:2.8rem}
@@ -169,9 +115,7 @@ body.display .big b{font-size:5rem}
 body.display .big span{font-size:1.5rem}
 body.display .bid{font-size:2.6rem}
 body.display .badge{font-size:1.15rem}
-body.display .fin .t{font-size:2.6rem}
-body.display .lead, body.display .msg, body.display .resa .who{font-size:1.2rem}
-body.display .next{font-size:1.2rem}
+body.display .lead, body.display .msg{font-size:1.2rem}
 
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important; transition:none !important}
@@ -203,40 +147,15 @@ body.display .next{font-size:1.2rem}
   <section class="summary" aria-live="polite">
     <div class="big"><b id="big-n">6</b><span id="big-l">bornes libres sur 6</span></div>
     <div class="chips" id="chips"></div>
-    <p class="next" id="next" hidden></p>
     <div class="conn" id="conn-status"><i></i><span>Connexion en cours</span></div>
   </section>
 
   <main class="grid" id="grid"></main>
 
   <div class="foot">
-    <span>Synchronisation automatique toutes les 15 secondes</span>
-    <button class="reset" id="btn-reset">Remettre toutes les bornes en disponible</button>
+    <span>État lu sur le portail Polytech, actualisé toutes les 3 minutes</span>
   </div>
 </div>
-
-<div class="backdrop" id="backdrop"></div>
-
-<section class="sheet" id="panel-charge" role="dialog" aria-modal="true" aria-labelledby="panel-charge-title">
-  <h2 id="panel-charge-title">Borne, heure de fin</h2>
-  <div class="quick" role="group" aria-label="Durée rapide">
-    <button data-add="1">+1 h</button><button data-add="2">+2 h</button><button data-add="3">+3 h</button><button data-add="4">+4 h</button>
-  </div>
-  <input type="time" id="time-input" aria-label="Heure de fin de charge">
-  <div class="row">
-    <button class="btn" id="btn-confirm">Confirmer</button>
-    <button class="btn ghost" id="btn-cancel-charge">Annuler</button>
-  </div>
-</section>
-
-<section class="sheet" id="panel-resa" role="dialog" aria-modal="true" aria-labelledby="panel-resa-title">
-  <h2 id="panel-resa-title">J'aimerais charger</h2>
-  <input type="text" id="prenom-input" placeholder="Votre prénom" maxlength="20" autocomplete="given-name" aria-label="Votre prénom">
-  <div class="row">
-    <button class="btn" id="btn-confirm-resa">Confirmer pour 10 min</button>
-    <button class="btn ghost" id="btn-cancel-resa">Annuler</button>
-  </div>
-</section>
 
 <div id="toast" role="status"></div>
 
@@ -246,37 +165,24 @@ body.display .next{font-size:1.2rem}
 const BORNES=["B1","B2","B3","B4","B5","B6"];
 const API="/api/bornes";
 const POLL=15000;
-const RESA_DURATION=10*60*1000;
-const WINDOW_MS=4*3600*1000;
+const KINDS=["libre","occupe","signale"];
 const EMPTY=()=>({status:"libre",fin:null,resa:null,resaFin:null});
 
 let state=Object.fromEntries(BORNES.map(id=>[id,EMPTY()]));
-let selectedCharge=null,selectedResa=null;
 let ready=false,notify=false;
 
 const $=s=>document.querySelector(s);
-const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ===== API (inchangée) ===== */
+/* ===== API (lecture seule: l'etat est ecrit par la synchronisation avec le portail) ===== */
 async function apiRead(){const r=await fetch(API);if(!r.ok)throw new Error();return r.json();}
-async function apiWrite(s){const r=await fetch(API,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(s)});if(!r.ok)throw new Error();}
 
-/* ===== Utilitaires ===== */
-function fmtH(iso){if(!iso)return"";return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function minutesTo(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/60000);}
-function secondsTo(iso){if(!iso)return null;return Math.round((new Date(iso)-Date.now())/1000);}
-function fmtDur(min){
-  if(min<1)return"moins d'une minute";
-  if(min<60)return min+" min";
-  return Math.floor(min/60)+" h "+String(min%60).padStart(2,"0");
-}
-function isAlarme(b){return b.status==="occupe"&&b.fin&&new Date(b.fin)<Date.now();}
-function isSignale(b){return b.status==="signale";}
-function isResaExpired(b){return b.status==="reservee"&&b.resaFin&&new Date(b.resaFin)<Date.now();}
-function progress(fin){if(!fin)return 0;const e=WINDOW_MS-(new Date(fin)-Date.now());return Math.min(100,Math.max(0,Math.round(e/WINDOW_MS*100)));}
 function normalizeState(data){
   const next={};
-  BORNES.forEach(id=>{next[id]=Object.assign(EMPTY(),(data&&data[id])||{});});
+  BORNES.forEach(id=>{
+    const s=Object.assign(EMPTY(),(data&&data[id])||{});
+    if(!KINDS.includes(s.status))s.status="libre";
+    next[id]=s;
+  });
   return next;
 }
 
@@ -284,100 +190,31 @@ function normalizeState(data){
 function setConn(s,t){
   const el=$("#conn-status");
   el.className="conn"+(s==="ok"?" ok":s==="error"?" err":"");
-  el.lastElementChild.textContent=s==="ok"?"Synchronisé à "+t:s==="error"?"Erreur réseau, nouvel essai automatique":"Connexion en cours";
+  el.lastElementChild.textContent=s==="ok"?"Actualisé à "+t:s==="error"?"Erreur réseau, nouvel essai automatique":"Connexion en cours";
 }
 const nowStr=()=>new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 
-/* ===== Expirations ===== */
-function checkExpiries(){
-  let changed=false;const next={...state};
-  BORNES.forEach(id=>{if(isResaExpired(next[id])){next[id]=EMPTY();changed=true;}});
-  if(changed)saveState(next);
-}
-
 /* ===== Rendu ===== */
-const CONE='<svg viewBox="0 0 44 48" fill="none" aria-hidden="true"><ellipse cx="22" cy="45" rx="14" ry="3" fill="currentColor" opacity=".25"/><polygon points="22,2 38,42 6,42" fill="#f97316"/><polygon points="22,2 36,38 8,38" fill="#fb923c"/><rect x="8" y="32" width="28" height="4" rx="2" fill="#fff" opacity=".9"/><rect x="10" y="24" width="24" height="3.5" rx="1.5" fill="#fff" opacity=".7"/><rect x="13" y="17" width="18" height="3" rx="1.5" fill="#fff" opacity=".5"/></svg>';
-
-function kindOf(b){
-  if(isAlarme(b))return"alarme";
-  if(isSignale(b))return"signale";
-  return b.status;
-}
-const BADGE={libre:"Disponible",occupe:"En charge",reservee:"J'aimerais charger",alarme:"Charge terminée",signale:"Charge terminée","hors-service":"Hors service"};
+const BADGE={libre:"Disponible",occupe:"En charge",signale:"Charge terminée"};
 
 function cardHTML(id,b){
-  const kind=kindOf(b);
-  const waiting=!!(b.resa&&b.resaFin&&new Date(b.resaFin)>Date.now());
-  const waitHTML=waiting?'<p class="wait"><b>'+esc(b.resa)+'</b> attend cette borne</p>':"";
-  let body="",acts="";
-  if(kind==="libre"){
-    body='<p class="lead">Prête à brancher</p>';
-    acts='<button class="btn" data-act="plug" data-id="'+id+'">Je me branche</button>'+
-         '<button class="btn ghost" data-act="busy" data-id="'+id+'">Borne occupée</button>';
-  }else if(kind==="reservee"){
-    const sec=secondsTo(b.resaFin),min=minutesTo(b.resaFin);
-    const urgent=sec!==null&&sec<120;
-    body='<div class="resa"><span class="who">'+esc(b.resa||"?")+'</span><span class="timer'+(urgent?" urgent":"")+'">Expire dans '+(min>0?min+" min":"moins d'1 min")+'</span></div>';
-    acts='<button class="btn" data-act="plug" data-id="'+id+'">Je branche !</button>';
-  }else if(kind==="occupe"){
-    if(b.fin){
-      const min=minutesTo(b.fin);
-      body='<div class="fin"><span class="k">Fin estimée</span><span class="t">'+fmtH(b.fin)+'</span><span class="rest">'+(min>0?"dans "+fmtDur(min):"maintenant")+'</span></div>'+
-           '<div class="bar"><i style="width:'+progress(b.fin)+'%"></i></div>';
-    }else{
-      body='<p class="lead">Heure de fin non indiquée</p>';
-    }
-    body+=waitHTML;
-    acts='<button class="btn ghost" data-act="done" data-id="'+id+'">Charge terminée</button>'+
-         '<button class="btn" data-act="free" data-id="'+id+'">Libérer la borne</button>';
-  }else if(kind==="alarme"){
-    const late=Math.max(0,-minutesTo(b.fin));
-    body='<p class="msg"><b>Débranchez SVP</b>Fin dépassée depuis '+fmtDur(late)+'. On partage les bornes, libérez la place.</p>';
-    body+=waitHTML;
-    acts='<button class="btn warn" data-act="free" data-id="'+id+'">Débrancher SVP</button>';
-  }else if(kind==="signale"){
-    body='<p class="msg"><b>Charge terminée</b>Dans un souci de partage, pensez à vous débrancher.</p>';
-    acts='<button class="btn warn" data-act="free" data-id="'+id+'">Débrancher SVP</button>';
-  }else{
-    body='<div class="hs-art">'+CONE+'<span class="lead">Borne indisponible</span></div>';
-    acts='<button class="btn ghost" data-act="hs" data-id="'+id+'">Remettre en service</button>';
-  }
-  let mini="";
-  if(b.status!=="hors-service"){
-    const canResa=b.status!=="reservee"&&!isSignale(b);
-    mini='<div class="mini">'+(canResa?'<button data-act="resa" data-id="'+id+'">J\'aimerais charger</button>':"")+
-         '<button data-act="hs" data-id="'+id+'">Hors service</button></div>';
-  }
-  const tap=(kind==="libre"||kind==="reservee")?"1":"0";
-  return'<article class="borne" data-id="'+id+'" data-status="'+kind+'" data-tap="'+tap+'">'+
+  const kind=b.status;
+  let body="";
+  if(kind==="libre")body='<p class="lead">Prête à brancher</p>';
+  else if(kind==="occupe")body='<p class="lead">Un véhicule est en charge</p>';
+  else body='<p class="msg"><b>Charge terminée</b>Dans un souci de partage, pensez à vous débrancher.</p>';
+  return'<article class="borne" data-id="'+id+'" data-status="'+kind+'">'+
     '<div class="head"><span class="bid">'+id+'</span><span class="badge"><i></i>'+BADGE[kind]+'</span></div>'+
-    body+'<div class="acts">'+acts+'</div>'+mini+'</article>';
-}
-
-function nextRelease(){
-  let best=null;const now=Date.now();
-  BORNES.forEach(id=>{
-    const b=state[id];
-    if(b.status==="occupe"&&b.fin){
-      const t=Math.max(now,new Date(b.fin).getTime());
-      if(!best||t<best.t)best={id,t};
-    }else if(isSignale(b)){
-      best={id,t:now};
-    }
-  });
-  return best;
+    body+'</article>';
 }
 
 function render(){
-  checkExpiries();
-  let libres=0,occupees=0,aDebrancher=0,resas=0,hs=0;
+  let libres=0,occupees=0,aDebrancher=0;
   BORNES.forEach(id=>{
-    const b=state[id],k=kindOf(b);
+    const k=state[id].status;
     if(k==="libre")libres++;
     else if(k==="occupe")occupees++;
-    else if(k==="alarme"||k==="signale")aDebrancher++;
-    else if(k==="reservee")resas++;
-    else if(k==="hors-service")hs++;
+    else aDebrancher++;
   });
   $("#grid").innerHTML=BORNES.map(id=>cardHTML(id,state[id])).join("");
 
@@ -389,127 +226,7 @@ function render(){
   const chips=[];
   if(occupees)chips.push('<span class="chip c-charging"><i></i>'+occupees+' en charge</span>');
   if(aDebrancher)chips.push('<span class="chip c-alarm"><i></i>'+aDebrancher+' à débrancher</span>');
-  if(resas)chips.push('<span class="chip c-resa"><i></i>'+resas+(resas>1?" souhaitent charger":" souhaite charger")+'</span>');
-  if(hs)chips.push('<span class="chip c-hs"><i></i>'+hs+' hors service</span>');
   $("#chips").innerHTML=chips.join("");
-
-  const nx=$("#next"),nr=libres===0?nextRelease():null;
-  if(nr){
-    nx.hidden=false;
-    const min=Math.round((nr.t-Date.now())/60000);
-    nx.innerHTML='Prochaine libération : <b>'+nr.id+'</b> '+(min>0?'vers <b>'+fmtH(new Date(nr.t).toISOString())+'</b>':'dès maintenant');
-  }else{
-    nx.hidden=true;
-  }
-}
-
-/* ===== Panneaux ===== */
-function openSheet(which){
-  $("#panel-charge").classList.toggle("visible",which==="charge");
-  $("#panel-resa").classList.toggle("visible",which==="resa");
-  $("#backdrop").classList.add("on");
-  setTimeout(()=>{(which==="charge"?$("#time-input"):$("#prenom-input")).focus();},260);
-}
-function closeSheets(){
-  selectedCharge=null;selectedResa=null;
-  $("#panel-charge").classList.remove("visible");
-  $("#panel-resa").classList.remove("visible");
-  $("#backdrop").classList.remove("on");
-}
-function setTimeIn(hours){
-  const d=new Date(Date.now()+hours*3600*1000);
-  $("#time-input").value=d.toTimeString().slice(0,5);
-}
-function openResa(id){
-  selectedResa=id;selectedCharge=null;
-  $("#panel-resa-title").textContent="J'aimerais charger sur "+id;
-  $("#prenom-input").value="";
-  openSheet("resa");
-}
-function handleBorne(id){
-  const b=state[id];
-  if(b.status==="libre"||b.status==="reservee"){
-    selectedCharge=id;selectedResa=null;
-    $("#panel-charge-title").textContent="Borne "+id+", heure de fin";
-    setTimeIn(2);
-    openSheet("charge");
-  }
-}
-async function toggleHS(id){
-  const b=state[id];
-  await saveState({...state,[id]:{...EMPTY(),status:b.status==="hors-service"?"libre":"hors-service"}});
-}
-function marquerSansAppli(id){
-  saveState({...state,[id]:{status:"occupe",fin:null,resa:null,resaFin:null}});
-}
-
-$("#grid").addEventListener("click",e=>{
-  const btn=e.target.closest("[data-act]");
-  if(btn){
-    e.stopPropagation();
-    const id=btn.dataset.id;
-    switch(btn.dataset.act){
-      case"plug":handleBorne(id);break;
-      case"busy":marquerSansAppli(id);break;
-      case"done":saveState({...state,[id]:{...EMPTY(),status:"signale"}});break;
-      case"free":saveState({...state,[id]:EMPTY()});break;
-      case"resa":openResa(id);break;
-      case"hs":toggleHS(id);break;
-    }
-    return;
-  }
-  const card=e.target.closest(".borne");
-  if(card&&card.dataset.tap==="1")handleBorne(card.dataset.id);
-});
-
-document.querySelectorAll("[data-add]").forEach(b=>b.addEventListener("click",()=>setTimeIn(Number(b.dataset.add))));
-
-$("#btn-confirm").addEventListener("click",async()=>{
-  if(!selectedCharge)return;
-  const val=$("#time-input").value;
-  if(!val){$("#time-input").focus();return;}
-  const[h,m]=val.split(":").map(Number);
-  const fin=new Date();fin.setHours(h,m,0,0);if(fin<Date.now())fin.setDate(fin.getDate()+1);
-  const btn=$("#btn-confirm"),id=selectedCharge;
-  btn.disabled=true;btn.textContent="Enregistrement…";
-  closeSheets();
-  await saveState({...state,[id]:{status:"occupe",fin:fin.toISOString(),resa:null,resaFin:null}});
-  btn.disabled=false;btn.textContent="Confirmer";
-});
-$("#btn-cancel-charge").addEventListener("click",closeSheets);
-
-async function submitResa(){
-  if(!selectedResa)return;
-  const prenom=$("#prenom-input").value.trim();
-  if(!prenom){$("#prenom-input").focus();return;}
-  const resaFin=new Date(Date.now()+RESA_DURATION).toISOString();
-  const btn=$("#btn-confirm-resa"),id=selectedResa,b=state[id];
-  btn.disabled=true;btn.textContent="Envoi…";
-  closeSheets();
-  await saveState({...state,[id]:{...b,resa:prenom,resaFin,status:b.status==="libre"?"reservee":b.status}});
-  btn.disabled=false;btn.textContent="Confirmer pour 10 min";
-}
-$("#btn-confirm-resa").addEventListener("click",submitResa);
-$("#prenom-input").addEventListener("keydown",e=>{if(e.key==="Enter")submitResa();});
-$("#btn-cancel-resa").addEventListener("click",closeSheets);
-$("#backdrop").addEventListener("click",closeSheets);
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){
-    if($("#backdrop").classList.contains("on"))closeSheets();
-    else if(document.body.classList.contains("display"))setDisplay(false);
-  }
-});
-
-$("#btn-reset").addEventListener("click",()=>{
-  if(!confirm("Remettre toutes les bornes en disponible ?"))return;
-  saveState(Object.fromEntries(BORNES.map(id=>[id,EMPTY()])));
-});
-
-/* ===== Sauvegarde et synchronisation ===== */
-async function saveState(next){
-  state=next;render();
-  try{await apiWrite(next);setConn("ok",nowStr());}
-  catch(e){setConn("error");}
 }
 
 let toastTimer;
@@ -576,10 +293,11 @@ function clockTick(){
   }
 }
 
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("display"))setDisplay(false);});
+
 /* ===== Demarrage ===== */
 applyTheme(savedTheme());
 if(new URLSearchParams(location.search).get("display")==="1")setDisplay(true);
-setInterval(render,30000);
 setInterval(clockTick,1000);
 render();poll();setInterval(poll,POLL);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll();});
